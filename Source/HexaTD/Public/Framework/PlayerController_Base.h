@@ -48,6 +48,8 @@ private:
 	/** TODO */
 	void InputClick();
 	/** TODO */
+	void InputRightClick();
+	/** TODO */
 	void GetCursorLocation(bool &IsValid, FVector &Location);
 	/** TODO */
 	bool HasEnoughResources(int32 Cost) const;

@@ -149,6 +149,7 @@ void APlayerController_Base::SetupInputComponent()
     Super::SetupInputComponent();
 
     InputComponent->BindAction("Click", IE_Pressed, this, &APlayerController_Base::InputClick);
+    InputComponent->BindAction("RightClick", IE_Pressed, this, &APlayerController_Base::InputRightClick);
 }
 
 /**
@@ -167,6 +168,19 @@ void APlayerController_Base::InputClick()
         {
             ServerSpawnBuilding(Location, SelectedBuildingClass);
         }
+    }
+}
+
+/**
+ * @brief Handle right-clicking
+ * 
+ */
+void APlayerController_Base::InputRightClick()
+{
+    if (SelectedBuildingPreview)
+    {
+        SelectedBuildingPreview->Destroy();
+        SelectedBuildingPreview = nullptr;
     }
 }
 
