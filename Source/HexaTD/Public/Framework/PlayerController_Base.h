@@ -22,8 +22,6 @@ class HEXATD_API APlayerController_Base : public APlayerController
 public:
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
-	/** Called when the game starts or being spawned */
-	//virtual void BeginPlay() override;
 
 	/** Set SelectedBuildingPreview and spawn it in preview mode */
 	UFUNCTION(BlueprintCallable)
@@ -51,6 +49,8 @@ private:
 	void InputClick();
 	/** TODO */
 	void GetCursorLocation(bool &IsValid, FVector &Location);
+	/** TODO */
+	bool HasEnoughResources(int32 Cost) const;
 
 	/** TODO */
 	TSubclassOf<ABuilding_Base> SelectedBuildingClass;

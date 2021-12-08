@@ -22,7 +22,7 @@ void APlayerController_Base::Tick(float DeltaTime)
         bool IsValidPosition;
         FVector NewLocation;
         GetCursorLocation(IsValidPosition, NewLocation);
-        if (IsValidPosition && PlayerState->GetAllowBuilding())
+        if (IsValidPosition && PlayerState->GetAllowBuilding() && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
         {
             SelectedBuildingPreview->SetMeshMaterial(MaterialValid);
         }
@@ -76,8 +76,8 @@ void APlayerController_Base::SetSelectedBuildingPreview(TSubclassOf<ABuilding_Ba
 void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location, TSubclassOf<ABuilding_Base> BuildingClass)
 {
     // TODO: Check if valid to spawn (ressources)!
-
-    if (HexGrid)
+    int32 ResourceCost = BuildingClass.GetDefaultObject()->ResourceCost;
+    if (HexGrid && HasEnoughResources(ResourceCost))
     {
         bool Success;
         HexGrid->OccupieGridSpace(Location, Success);
@@ -94,6 +94,7 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
                 Building->SetIsPreview(false);
                 UGameplayStatics::FinishSpawningActor(Building, SpawnTransform);
                 // TODO: Subtract ressources from PlayerState!
+                PlayerState->ResourceAmount -= ResourceCost;
             }
         }
     }
@@ -105,7 +106,8 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
  */
 void APlayerController_Base::ServerInitializePostLogin_Implementation()
 {
-    // Get HexGrid reference
+    // Get references
+    PlayerState = GetPlayerState<APlayerState_Base>();
     HexGrid = Cast<AHexGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AHexGrid::StaticClass()));
 
     // Wait for the PlayerState to initialize before the remote PlayerController tries to find it
@@ -155,7 +157,7 @@ void APlayerController_Base::SetupInputComponent()
  */
 void APlayerController_Base::InputClick()
 {
-    if (PlayerState && PlayerState->GetAllowBuilding())
+    if (PlayerState && PlayerState->GetAllowBuilding() && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
     {
         bool IsValidPosition;
         FVector Location;
@@ -187,4 +189,9 @@ void APlayerController_Base::GetCursorLocation(bool &IsValid, FVector &Location)
     FHitResult HitResult; 
     GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
     Location = HexGrid->SnapToGrid(HitResult.Location, IsValid);
+}
+
+bool APlayerController_Base::HasEnoughResources(int32 Cost) const
+{
+    return PlayerState->ResourceAmount >= Cost;
 }

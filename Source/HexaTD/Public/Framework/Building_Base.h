@@ -34,6 +34,8 @@ public:
 	// TODO
 	UPROPERTY(EditAnywhere)
 	bool bIsPreview = false;
+	UPROPERTY(EditDefaultsOnly)
+	int32 ResourceCost = 1;
 
 protected:
 	// Called when the game starts or when spawned

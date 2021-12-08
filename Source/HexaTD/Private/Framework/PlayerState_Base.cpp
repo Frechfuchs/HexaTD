@@ -25,6 +25,7 @@ void APlayerState_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &
 
     DOREPLIFETIME(APlayerState_Base, bAllowBuilding);
     DOREPLIFETIME(APlayerState_Base, bReadyForWavePhase);
+    DOREPLIFETIME(APlayerState_Base, ResourceAmount);    
 }
 
 /**

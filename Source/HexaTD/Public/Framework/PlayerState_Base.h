@@ -45,11 +45,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_NotifyPropChange OnAllowBuildingUpdated;
 
-protected:
+	UPROPERTY(Replicated)
+	int32 ResourceAmount = 0;
 
+protected:
 	UPROPERTY(ReplicatedUsing = OnRep_AllowBuildingUpdated)
 	bool bAllowBuilding = false;
 	UPROPERTY(Replicated)
 	bool bReadyForWavePhase = false;
-	
 };

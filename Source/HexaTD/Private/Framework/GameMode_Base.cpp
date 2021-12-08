@@ -175,6 +175,7 @@ void AGameMode_Base::HandleMatchStateBuildingPhase()
         {
             // Update PlayerStates AllowBuilding
             PlayerState->SetAllowBuilding(true);
+            PlayerState->ResourceAmount += 5;
             PlayerState->SetReadyForWavePhase(false);
             // Call RepNotify for server manually, it won't be called on the server by the engine
             PlayerState->OnRep_AllowBuildingUpdated();
@@ -285,9 +286,6 @@ void AGameMode_Base::CheckForWaveFinished()
 {
     // Check if any Enemy is still alive
 	auto Enemy = UGameplayStatics::GetActorOfClass(GetWorld(), AEnemy_Base::StaticClass());
-    UE_LOG(LogTemp, Warning, TEXT("CheckForWaveFinished"));
-    if (bWaveFinishedSpawn) UE_LOG(LogTemp, Warning, TEXT("Wave Finished Spawning true"));
-    if (Enemy) UE_LOG(LogTemp, Warning, TEXT("Enemy still found"));
     if (!Enemy && bWaveFinishedSpawn)
     {
         SetMatchState(MatchStateBuildingPhase);
