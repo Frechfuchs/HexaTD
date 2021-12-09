@@ -28,9 +28,9 @@ void AGameState_Base::TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOv
 {
     if (PlayerTeams.Num())
     {
-        FPlayerTeam PlayerTeam = PlayerTeams[0];
-        PlayerTeam.LifeCount -= LivesCount;
-        IsGameOver = PlayerTeam.LifeCount <= 0;
+        FPlayerTeam* PlayerTeam = &PlayerTeams[0];
+        PlayerTeam->LifeCount -= LivesCount;
+        IsGameOver = PlayerTeam->LifeCount <= 0;
     }
 }
 
