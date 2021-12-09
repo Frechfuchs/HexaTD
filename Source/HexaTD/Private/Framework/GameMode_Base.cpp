@@ -132,6 +132,11 @@ void AGameMode_Base::OnMatchStateSet()
         HandleMatchStateWavePhase();
         return;
     }
+
+    if (MatchState == MatchStateGameOver)
+    {
+        HandleMatchStateGameOver();
+    }
 }
 
 /**
@@ -144,18 +149,6 @@ bool AGameMode_Base::ReadyToStartMatch()
 {
     return true;
 	//return GetNumPlayers() == GameSession->MaxPlayers;
-}
-
-/**
- * @brief TODO
- * 
- * @return true 
- * @return false 
- */
-// Can this be removed?
-bool AGameMode_Base::ReadyToEndMatch() 
-{
-	return bIsGameOver;
 }
 
 /**
@@ -201,17 +194,7 @@ void AGameMode_Base::HandleMatchStateBuildingPhase()
 void AGameMode_Base::HandleMatchStateWavePhase() 
 {
     // Update players
-	for (APlayerController_Base* PC : PlayerControllers)
-    {
-        APlayerState_Base* PlayerState = PC->GetPlayerState<APlayerState_Base>();
-        if (PlayerState)
-        {
-            // Update PlayerStates AllowBuilding
-            PlayerState->SetAllowBuilding(false);
-            // Call RepNotify for server manually, it won't be called on the server by the engine
-            PlayerState->OnRep_AllowBuildingUpdated();
-        }
-    }
+	ForbidPlayersBuilding();
 
     // Start wave
     if (SpawnPoint)
@@ -219,6 +202,16 @@ void AGameMode_Base::HandleMatchStateWavePhase()
         bWaveFinishedSpawn = false;
         SpawnPoint->StartWave();
     }
+}
+
+/**
+ * @brief TODO
+ */
+void AGameMode_Base::HandleMatchStateGameOver()
+{
+    ForbidPlayersBuilding();
+    GameState->SetGameOver(true);
+    GameState->OnRep_GameOverUpdated();
 }
 
 /**
@@ -270,7 +263,7 @@ void AGameMode_Base::TeamLosingLives(int TeamID, int LivesCount)
     GameState->OnRep_PlayerTeamsUpdated();
     if (IsGameOver)
     {
-        bIsGameOver = true;
+        SetMatchState(MatchStateGameOver);
     }
 }
 
@@ -306,4 +299,33 @@ void AGameMode_Base::CheckForWaveFinished()
     {
         SetMatchState(MatchStateBuildingPhase);
     }
+}
+
+/**
+ * @brief TODO
+ */
+void AGameMode_Base::ForbidPlayersBuilding()
+{
+    for (APlayerController_Base* PC : PlayerControllers)
+    {
+        APlayerState_Base* PlayerState = PC->GetPlayerState<APlayerState_Base>();
+        if (PlayerState)
+        {
+            // Update PlayerStates AllowBuilding
+            PlayerState->SetAllowBuilding(false);
+            // Call RepNotify for server manually, it won't be called on the server by the engine
+            PlayerState->OnRep_AllowBuildingUpdated();
+        }
+    }
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return true 
+ * @return false 
+ */
+bool AGameMode_Base::IsBuildingPhase()
+{
+    return MatchState == MatchStateBuildingPhase;
 }

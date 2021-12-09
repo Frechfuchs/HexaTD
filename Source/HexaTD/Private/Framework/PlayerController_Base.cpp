@@ -2,6 +2,7 @@
 
 #include "Framework/PlayerController_Base.h"
 #include "Framework/Building_Base.h"
+#include "Framework/GameMode_Base.h"
 #include "Framework/PlayerPawn_Base.h"
 #include "Framework/PlayerState_Base.h"
 #include "HexGrid/HexGrid.h"
@@ -77,7 +78,7 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
 {
     // TODO: Check if valid to spawn (ressources)!
     int32 ResourceCost = BuildingClass.GetDefaultObject()->ResourceCost;
-    if (HexGrid && HasEnoughResources(ResourceCost))
+    if (HexGrid && GameMode->IsBuildingPhase() && HasEnoughResources(ResourceCost))
     {
         bool Success;
         HexGrid->OccupieGridSpace(Location, Success);
@@ -111,6 +112,7 @@ void APlayerController_Base::ServerInitializePostLogin_Implementation()
     // Get references
     PlayerState = GetPlayerState<APlayerState_Base>();
     HexGrid = Cast<AHexGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AHexGrid::StaticClass()));
+    GameMode = GetWorld()->GetAuthGameMode<AGameMode_Base>();
 
     // Wait for the PlayerState to initialize before the remote PlayerController tries to find it
     FTimerHandle TimerHandle;

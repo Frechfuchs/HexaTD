@@ -52,6 +52,15 @@ void AGameState_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & O
  * @brief TODO
  * 
  */
+void AGameState_Base::ClientGameOverUpdated_Implementation()
+{
+    OnGameOverUpdated.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
 void AGameState_Base::ClientPlayerTeamsUpdated_Implementation()
 {
     OnPlayerTeamsUpdated.Broadcast();
@@ -64,6 +73,15 @@ void AGameState_Base::ClientPlayerTeamsUpdated_Implementation()
 void AGameState_Base::ClientWaveCountUpdated_Implementation()
 {
     OnWaveCountUpdated.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void AGameState_Base::OnRep_GameOverUpdated()
+{
+    ClientGameOverUpdated();
 }
 
 /**
@@ -102,4 +120,25 @@ int32 AGameState_Base::GetWaveCount() const
 TArray<FPlayerTeam> AGameState_Base::GetPlayerTeams() const
 {
     return PlayerTeams;
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param GameOver 
+ */
+void AGameState_Base::SetGameOver(bool GameOver)
+{
+    bIsGameOver = GameOver;
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return true 
+ * @return false 
+ */
+bool AGameState_Base::GetGameOver() const
+{
+    return bIsGameOver;
 }

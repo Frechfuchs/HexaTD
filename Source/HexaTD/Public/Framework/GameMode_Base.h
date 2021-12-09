@@ -31,7 +31,6 @@ public:
 	virtual void StartPlay() override;
 	virtual void OnMatchStateSet() override;
 	bool ReadyToStartMatch();
-	bool ReadyToEndMatch();
 
 	/**
 	 * Gameplay
@@ -39,12 +38,15 @@ public:
 	void HandleMatchStateInProgress();
 	void HandleMatchStateBuildingPhase();
 	void HandleMatchStateWavePhase();
+	void HandleMatchStateGameOver();
 	void HandlePlayerIsReady();
 	void HandleWaveFinishedSpawn();
 	UFUNCTION(BlueprintCallable)
 	void TeamLosingLives(int TeamID, int LivesCount);
 	void OccupieSystemGridSpaces();
 	void CheckForWaveFinished();
+	void ForbidPlayersBuilding();
+	bool IsBuildingPhase();
 
 protected:
 
@@ -57,12 +59,12 @@ private:
 	// TODO: Can there be multiple?
 	ASpawnPoint* SpawnPoint;
 	TArray<AActor*> CheckPoints;
-	bool bIsGameOver = false;
 	bool bWaveFinishedSpawn = false;
 	FName MatchStateWaitToStart = "WaitingToStart";
 	FName MatchStateInProgress = "InProgress";
 	FName MatchStateBuildingPhase = "BuildingPhase";
 	FName MatchStateWavePhase = "WavePhase";
+	FName MatchStateGameOver = "GameOver";
 
 };
 

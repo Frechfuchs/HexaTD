@@ -43,9 +43,13 @@ public:
 	 */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UFUNCTION(Client, Reliable)
+	void ClientGameOverUpdated();
+	UFUNCTION(Client, Reliable)
 	void ClientPlayerTeamsUpdated();
 	UFUNCTION(Client, Reliable)
 	void ClientWaveCountUpdated();
+	UFUNCTION()
+	void OnRep_GameOverUpdated();
 	UFUNCTION()
 	void OnRep_PlayerTeamsUpdated();
 	UFUNCTION()
@@ -58,10 +62,16 @@ public:
 	int32 GetWaveCount() const;
 	UFUNCTION(BlueprintCallable)
 	TArray<FPlayerTeam> GetPlayerTeams() const;
+	UFUNCTION()
+	void SetGameOver(bool GameOver);
+	UFUNCTION(BlueprintCallable)
+	bool GetGameOver() const;
 
 	/**
 	 * Delegates
 	 */
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_NotifyGameStateChange OnGameOverUpdated;
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_NotifyGameStateChange OnPlayerTeamsUpdated;
 	UPROPERTY(BlueprintAssignable)
@@ -77,5 +87,6 @@ protected:
 	/** TODO */
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeamsUpdated)
 	TArray<FPlayerTeam> PlayerTeams;
-
+	UPROPERTY(ReplicatedUsing = OnRep_GameOverUpdated)
+	bool bIsGameOver = false;
 };

@@ -7,6 +7,7 @@
 #include "PlayerController_Base.generated.h"
 
 class ABuilding_Base;
+class AGameMode_Base;
 class AHexGrid;
 class APlayerState_Base;
 class UMaterialInstance;
@@ -66,6 +67,8 @@ private:
 	AHexGrid* HexGrid;
 	/** TODO */
 	APlayerState_Base* PlayerState;
+	/** TODO */
+	AGameMode_Base* GameMode;
 
 	//TODO
 	// Shows debugging UI
