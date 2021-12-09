@@ -152,6 +152,7 @@ bool AGameMode_Base::ReadyToStartMatch()
  * @return true 
  * @return false 
  */
+// Can this be removed?
 bool AGameMode_Base::ReadyToEndMatch() 
 {
 	return bIsGameOver;
@@ -181,8 +182,15 @@ void AGameMode_Base::HandleMatchStateBuildingPhase()
             PlayerState->ResourceAmount += 5;
             PlayerState->SetReadyForWavePhase(false);
             // Call RepNotify for server manually, it won't be called on the server by the engine
+            // TODO: Maybe only call for host
             PlayerState->OnRep_AllowBuildingUpdated();
+            PlayerState->OnRep_ResourceAmountUpdated();
         }
+    }
+    if (GameState)
+    {
+        GameState->WaveCount++;
+        GameState->OnRep_WaveCountUpdated();
     }
 }
 
@@ -259,6 +267,7 @@ void AGameMode_Base::TeamLosingLives(int TeamID, int LivesCount)
     bool IsGameOver = false;
     CheckForWaveFinished();
     GameState->TeamLosingLives(TeamID, LivesCount, IsGameOver);
+    GameState->OnRep_PlayerTeamsUpdated();
     if (IsGameOver)
     {
         bIsGameOver = true;

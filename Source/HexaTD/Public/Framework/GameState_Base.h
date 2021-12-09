@@ -6,19 +6,21 @@
 #include "GameFramework/GameState.h"
 #include "GameState_Base.generated.h"
 
-USTRUCT()
-struct HEXATD_API FPlayerTeam
-{
-	GENERATED_BODY()
-
-	int TeamID = 0;
-	//Members
-	int LifeCount = 20;
-};
-
 class APlayerState_Base;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_OnMatchStateChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyGameStateChange);
+
+USTRUCT(BlueprintType)
+struct HEXATD_API FPlayerTeam
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int TeamID = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int LifeCount = 20;
+	// TODO: Members
+};
 
 /**
  * 
@@ -37,31 +39,43 @@ public:
 	/** TODO */
 	void TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOver);
 	/**
-	 * @brief Called by GameMode.
-	 * Calls the Delegate OnMatchStateBuildPhase so clients can update accordingly.
+	 * Replication
 	 */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UFUNCTION(Client, Reliable)
-	void ClientMatchStateChangedBuildPhase();
+	void ClientPlayerTeamsUpdated();
+	UFUNCTION(Client, Reliable)
+	void ClientWaveCountUpdated();
+	UFUNCTION()
+	void OnRep_PlayerTeamsUpdated();
+	UFUNCTION()
+	void OnRep_WaveCountUpdated();
 
 	/**
-	 * @brief Called by GameMode.
-	 * Calls the Delegate OnMatchStateWavePhase so clients can update accordingly.
+	 * Getters & Setters
 	 */
-	UFUNCTION(Client, Reliable)
-	void ClientMatchStateChangedWavePhase();
+	UFUNCTION(BlueprintCallable)
+	int32 GetWaveCount() const;
+	UFUNCTION(BlueprintCallable)
+	TArray<FPlayerTeam> GetPlayerTeams() const;
 
 	/**
 	 * Delegates
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FDelegate_OnMatchStateChange OnMatchStateBuildPhase;
+	FDelegate_NotifyGameStateChange OnPlayerTeamsUpdated;
 	UPROPERTY(BlueprintAssignable)
-	FDelegate_OnMatchStateChange OnMatchStateWavePhase;
+	FDelegate_NotifyGameStateChange OnWaveCountUpdated;
 
 	/** Array of all PlayerStates, maintained on both server and clients (PlayerStates are always relevant) */
 	TArray<APlayerState_Base*> PlayerArray;
+	/** TODO */
+	UPROPERTY(ReplicatedUsing = OnRep_WaveCountUpdated)
+	int32 WaveCount = 0;
 
 protected:
+	/** TODO */
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeamsUpdated)
 	TArray<FPlayerTeam> PlayerTeams;
 
 };

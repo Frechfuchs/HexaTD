@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "PlayerState_Base.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyPropChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyPlayerStateChange);
 
 /**
  * 
@@ -17,8 +17,6 @@ class HEXATD_API APlayerState_Base : public APlayerState
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
-	void OnRep_AllowBuildingUpdated();
 	/**
 	 * Replication
 	 */
@@ -29,6 +27,12 @@ public:
 	void ServerSetReadyForWavePhase(bool Ready);
 	UFUNCTION(Client, Reliable)
 	void ClientAllowBuildingUpdated();
+	UFUNCTION(Client, Reliable)
+	void ClientResourceAmountUpdated();
+	UFUNCTION()
+	void OnRep_AllowBuildingUpdated();
+	UFUNCTION()
+	void OnRep_ResourceAmountUpdated();
 
 	/**
 	 * Getters & Setters
@@ -36,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetAllowBuilding() const;
 	void SetAllowBuilding(bool Allow);
+	UFUNCTION(BlueprintCallable)
+	int32 GetResourceAmount() const;
 	bool GetReadyForWavePhase() const;
 	void SetReadyForWavePhase(bool Ready);
 
@@ -43,9 +49,12 @@ public:
 	 * Delegates
 	 */
 	UPROPERTY(BlueprintAssignable)
-	FDelegate_NotifyPropChange OnAllowBuildingUpdated;
+	FDelegate_NotifyPlayerStateChange OnAllowBuildingUpdated;
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_NotifyPlayerStateChange OnResourceAmountUpdated;
 
-	UPROPERTY(Replicated)
+	// TODO: Move to private
+	UPROPERTY(ReplicatedUsing = OnRep_ResourceAmountUpdated)
 	int32 ResourceAmount = 0;
 
 protected:

@@ -93,8 +93,10 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
                 // Set Props here
                 Building->SetIsPreview(false);
                 UGameplayStatics::FinishSpawningActor(Building, SpawnTransform);
-                // TODO: Subtract ressources from PlayerState!
                 PlayerState->ResourceAmount -= ResourceCost;
+                // Call OnRep for host
+                // TODO: Maybe there is a better solution
+                PlayerState->OnRep_ResourceAmountUpdated();
             }
         }
     }

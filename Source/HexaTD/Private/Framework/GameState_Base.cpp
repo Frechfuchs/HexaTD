@@ -2,6 +2,7 @@
 
 
 #include "Framework/GameState_Base.h"
+#include "Net/UnrealNetwork.h"
 
 /**
  * @brief 
@@ -34,22 +35,71 @@ void AGameState_Base::TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOv
     }
 }
 
-// TODO: REMOVE
 /**
- * @brief Called by GameMode.
- * Calls the Delegate OnMatchStateBuildPhase so clients can update accordingly.
+ * @brief TODO
+ * 
+ * @param OutLifetimeProps 
  */
-void AGameState_Base::ClientMatchStateChangedBuildPhase_Implementation()
+void AGameState_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & OutLifetimeProps) const
 {
-    OnMatchStateBuildPhase.Broadcast();
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(AGameState_Base, PlayerTeams);
+    DOREPLIFETIME(AGameState_Base, WaveCount);
 }
 
-// TODO: REMOVE
 /**
- * @brief Called by GameMode.
- * Calls the Delegate OnMatchStateWavePhase so clients can update accordingly.
+ * @brief TODO
+ * 
  */
-void AGameState_Base::ClientMatchStateChangedWavePhase_Implementation()
+void AGameState_Base::ClientPlayerTeamsUpdated_Implementation()
 {
-    OnMatchStateWavePhase.Broadcast();
+    OnPlayerTeamsUpdated.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void AGameState_Base::ClientWaveCountUpdated_Implementation()
+{
+    OnWaveCountUpdated.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void AGameState_Base::OnRep_PlayerTeamsUpdated()
+{
+    ClientPlayerTeamsUpdated();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void AGameState_Base::OnRep_WaveCountUpdated()
+{
+    ClientWaveCountUpdated();
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return int32 
+ */
+int32 AGameState_Base::GetWaveCount() const
+{
+    return WaveCount;
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return TArray<FPlayerTeam> 
+ */
+TArray<FPlayerTeam> AGameState_Base::GetPlayerTeams() const
+{
+    return PlayerTeams;
 }

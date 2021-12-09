@@ -7,15 +7,6 @@
 
 /**
  * @brief TODO
- * manually called by GameMode_Base. RepNotify doesn't replicate for host.
- */
-void APlayerState_Base::OnRep_AllowBuildingUpdated()
-{
-    ClientAllowBuildingUpdated();
-}
-
-/**
- * @brief TODO
  * 
  * @param OutLifetimeProps 
  */
@@ -64,6 +55,33 @@ void APlayerState_Base::ClientAllowBuildingUpdated_Implementation()
 /**
  * @brief TODO
  * 
+ */
+void APlayerState_Base::ClientResourceAmountUpdated_Implementation()
+{
+    OnResourceAmountUpdated.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * manually called by GameMode_Base. RepNotify doesn't replicate for host.
+ */
+void APlayerState_Base::OnRep_AllowBuildingUpdated()
+{
+    ClientAllowBuildingUpdated();
+}
+
+/**
+ * @brief TODO
+ * manually called by GameMode_Base. RepNotify doesn't replicate for host.
+ */
+void APlayerState_Base::OnRep_ResourceAmountUpdated()
+{
+    ClientResourceAmountUpdated();
+}
+
+/**
+ * @brief TODO
+ * 
  * @return true 
  * @return false 
  */
@@ -80,6 +98,16 @@ bool APlayerState_Base::GetAllowBuilding() const
 void APlayerState_Base::SetAllowBuilding(bool Ready)
 {
 	bAllowBuilding = Ready;
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return int32 
+ */
+int32 APlayerState_Base::GetResourceAmount() const
+{
+	return ResourceAmount;
 }
 
 /**
