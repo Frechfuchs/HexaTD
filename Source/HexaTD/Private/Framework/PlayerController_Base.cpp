@@ -145,6 +145,16 @@ void APlayerController_Base::ClientInitializePostLogin_Implementation()
 }
 
 /**
+ * @brief 
+ * 
+ * @return ABuilding_Base* 
+ */
+ABuilding_Base* APlayerController_Base::GetSelectedBuilding() const
+{
+    return SelectedBuilding;
+}
+
+/**
  * @brief Setup InputComponents
  * 
  */
@@ -162,8 +172,9 @@ void APlayerController_Base::SetupInputComponent()
  */
 void APlayerController_Base::InputClick()
 {
-    if (PlayerState && PlayerState->GetAllowBuilding() && 
-        SelectedBuildingPreview && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
+    // When SelectedBuildingPreview is active, try building
+    if (SelectedBuildingPreview && PlayerState && PlayerState->GetAllowBuilding() 
+         && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
     {
         bool IsValidPosition;
         FVector Location;
@@ -173,6 +184,28 @@ void APlayerController_Base::InputClick()
         {
             ServerSpawnBuilding(Location, SelectedBuildingClass);
         }
+    }
+    // When no SelectedBuildingPreview present, try to find an Actor
+    else
+    {
+        FHitResult HitResult; 
+        GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
+        AActor* Actor = HitResult.GetActor();
+        if (Actor)
+        {
+            // Check for Building
+            if (Actor->IsA(ABuilding_Base::StaticClass()))
+            {
+                SelectedBuilding = Cast<ABuilding_Base>(Actor);
+                BuildingSelected.Broadcast();
+            }
+            else
+            {
+                SelectedBuilding = nullptr;
+                BuildingSelected.Broadcast();
+            }
+        }
+        
     }
 }
 
@@ -206,7 +239,7 @@ void APlayerController_Base::GetCursorLocation(bool &IsValid, FVector &Location)
     }
 
     FHitResult HitResult; 
-    GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, HitResult);
+    GetHitResultUnderCursor(ECollisionChannel::ECC_PhysicsBody, true, HitResult);
     Location = HexGrid->SnapToGrid(HitResult.Location, IsValid);
 }
 

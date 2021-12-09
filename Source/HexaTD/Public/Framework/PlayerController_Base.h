@@ -12,6 +12,8 @@ class AHexGrid;
 class APlayerState_Base;
 class UMaterialInstance;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyPlayerControllerChange);
+
 /**
  * 
  */
@@ -41,6 +43,18 @@ public:
 	UFUNCTION(Client, Reliable)
 	void ClientInitializePostLogin();
 
+	/**
+	 * Getters & Setters
+	 */
+	UFUNCTION(BlueprintCallable)
+	ABuilding_Base* GetSelectedBuilding() const;
+
+	/**
+	 * Delegates
+	 */
+	UPROPERTY(BlueprintAssignable)
+	FDelegate_NotifyPlayerControllerChange BuildingSelected;
+
 protected:
 	/** TODO */
 	virtual void SetupInputComponent() override;
@@ -57,6 +71,8 @@ private:
 
 	/** TODO */
 	TSubclassOf<ABuilding_Base> SelectedBuildingClass;
+	/** TODO */
+	ABuilding_Base* SelectedBuilding;
 	/** TODO */
 	ABuilding_Base* SelectedBuildingPreview;
 	/** TODO */

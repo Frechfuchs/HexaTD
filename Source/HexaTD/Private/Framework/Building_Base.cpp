@@ -19,12 +19,13 @@ ABuilding_Base::ABuilding_Base()
 	BodyCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("BodyCollision"));
 	BodyCollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_PhysicsBody);
 	BodyCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BodyCollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 	RootComponent = BodyCollisionComponent;
 
 	// StaticMeshComponent
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Ignore);
+	StaticMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_PhysicsBody, ECollisionResponse::ECR_Ignore);
 	StaticMeshComponent->SetupAttachment(RootComponent);
 
 	//TargetCollisionComponent
