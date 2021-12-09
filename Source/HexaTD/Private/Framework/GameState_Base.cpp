@@ -44,6 +44,7 @@ void AGameState_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & O
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+    DOREPLIFETIME(AGameState_Base, bIsGameOver)
     DOREPLIFETIME(AGameState_Base, PlayerTeams);
     DOREPLIFETIME(AGameState_Base, WaveCount);
 }
