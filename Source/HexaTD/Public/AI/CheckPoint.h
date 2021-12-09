@@ -8,6 +8,16 @@
 
 class UArrowComponent;
 
+UCLASS(Blueprintable)
+class UCheckPointsObject : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FVector> CheckPoints;
+};
+
 UCLASS()
 class HEXATD_API ACheckPoint : public AActor
 {
@@ -16,6 +26,19 @@ class HEXATD_API ACheckPoint : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ACheckPoint();
+
+	// Operators
+	friend bool operator<(const ACheckPoint& lhs, const ACheckPoint& rhs)
+	{
+		return lhs.OrderNum < rhs.OrderNum;
+	}
+	friend bool operator>(const ACheckPoint& lhs, const ACheckPoint& rhs)
+	{
+		return lhs.OrderNum > rhs.OrderNum;
+	}
+
+	UPROPERTY(EditAnywhere)
+	int32 OrderNum = 0;
 
 protected:
 	// Called when the game starts or when spawned

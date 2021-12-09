@@ -10,16 +10,7 @@
 class AGameMode_Base;
 class UArrowComponent;
 class UBehaviorTree;
-
-UCLASS(Blueprintable)
-class UCheckPointsObject : public UObject
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FVector> CheckPoints;
-};
+class UCheckPointsObject;
 
 UCLASS()
 class HEXATD_API ASpawnPoint : public AActor
@@ -53,5 +44,9 @@ private:
 	AActor* GoalPoint;
 	UPROPERTY()
 	UCheckPointsObject* CheckPointsObject;
+	UPROPERTY()
+	FTimerHandle SpawnTimerHandle;
+	UPROPERTY()
+	int32 SpawnCount;
 
 };

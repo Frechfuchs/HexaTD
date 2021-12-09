@@ -39,8 +39,9 @@ ASpawnPoint::ASpawnPoint()
  */
 void ASpawnPoint::StartWave()
 {
-	SpawnAI();
-	if (GameMode) GameMode->HandleWaveFinishedSpawn();
+	float Delay = 0.5f;
+	SpawnCount = 0;
+	GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &ASpawnPoint::SpawnAI, Delay, true);
 }
 
 /**
@@ -58,10 +59,19 @@ void ASpawnPoint::BeginPlay()
 	// Creeate CheckPointsObject
 	CheckPointsObject = NewObject<UCheckPointsObject>(this);
 	TArray<AActor*> CheckPointActors;
+	TArray<ACheckPoint*> CheckPoints;
 	UGameplayStatics::GetAllActorsOfClass(World, ACheckPoint::StaticClass(), CheckPointActors);
-	for (AActor* CheckPointActor : CheckPointActors)
+	// Cast Actors to CheckPoints
+	for (AActor* Actor : CheckPointActors)
 	{
-		CheckPointsObject->CheckPoints.Add(CheckPointActor->GetActorLocation());
+		ACheckPoint* CheckPoint = Cast<ACheckPoint>(Actor);
+		if (CheckPoint) CheckPoints.Add(CheckPoint);
+	}
+	// Order Checkpoints by OrderNum
+	CheckPoints.Sort();
+	for (ACheckPoint* CheckPoint : CheckPoints)
+	{
+		CheckPointsObject->CheckPoints.Add(CheckPoint->GetActorLocation());
 	}
 }
 
@@ -85,5 +95,11 @@ void ASpawnPoint::SpawnAI()
 		if (CheckPointsObject) AIC->CheckPointsObject = CheckPointsObject;
 		// TODO: WaveTable?
 		UGameplayStatics::FinishSpawningActor(AIC, SpawnTransform);
+		SpawnCount++;
+		if (SpawnCount >= 20)
+		{
+			GetWorldTimerManager().ClearTimer(SpawnTimerHandle);
+			if (GameMode) GameMode->HandleWaveFinishedSpawn();
+		}
 	}
 }
