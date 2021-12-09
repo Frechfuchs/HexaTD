@@ -68,6 +68,20 @@ void APlayerController_Base::SetSelectedBuildingPreview(TSubclassOf<ABuilding_Ba
     }
 }
 
+/**
+ * @brief TODO
+ * 
+ */
+void APlayerController_Base::DestroySelectedBuilding()
+{
+    if (SelectedBuilding)
+    {
+        ServerDestroyBuilding(SelectedBuilding);
+        SelectedBuilding = nullptr;
+        BuildingSelected.Broadcast();
+    }
+}
+
 // TODO: Use CubeCoords instead of Location
 /**
  * @brief Spawn a selected building on the server
@@ -101,6 +115,16 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
             }
         }
     }
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param Building 
+ */
+void APlayerController_Base::ServerDestroyBuilding_Implementation(ABuilding_Base* Building)
+{
+    if (Building) Building->Destroy();
 }
 
 /**

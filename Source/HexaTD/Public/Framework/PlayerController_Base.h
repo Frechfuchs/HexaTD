@@ -26,9 +26,14 @@ public:
 	/** Called every frame */
 	virtual void Tick(float DeltaTime) override;
 
+	/**
+	 * Gameplay
+	 */
 	/** Set SelectedBuildingPreview and spawn it in preview mode */
 	UFUNCTION(BlueprintCallable)
 	void SetSelectedBuildingPreview(TSubclassOf<ABuilding_Base> BuildingClass, UMaterialInstance* MValid, UMaterialInstance* MInvalid);
+	UFUNCTION(BlueprintCallable)
+	void DestroySelectedBuilding();	
 
 	/**
 	 * Replication
@@ -36,6 +41,8 @@ public:
 	/** TODO */
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBuilding(FVector Location, TSubclassOf<ABuilding_Base> BuildingClass);
+	UFUNCTION(Server, Reliable)
+	void ServerDestroyBuilding(ABuilding_Base* Building);
 	/** TODO */
 	UFUNCTION(Server, Reliable)
 	void ServerInitializePostLogin();
@@ -85,8 +92,4 @@ private:
 	APlayerState_Base* PlayerState;
 	/** TODO */
 	AGameMode_Base* GameMode;
-
-	//TODO
-	// Shows debugging UI
-	//bool Debugging = false;
 };
