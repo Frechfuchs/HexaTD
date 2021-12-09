@@ -20,11 +20,12 @@ void AGameState_Base::CreateTeams()
 }
 
 /**
- * @brief 
+ * @brief TODO
  * 
  * @param TeamID 
  * @param LifesCount 
  */
+// TODO: Multiple teams
 void AGameState_Base::TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOver)
 {
     if (PlayerTeams.Num())
@@ -32,6 +33,23 @@ void AGameState_Base::TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOv
         FPlayerTeam* PlayerTeam = &PlayerTeams[0];
         PlayerTeam->LifeCount -= LivesCount;
         IsGameOver = PlayerTeam->LifeCount <= 0;
+    }
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param TeamID 
+ * @param LivesCount 
+ */
+// TODO: Refactor for reuse in TeamLosingLives
+// TODO: Multiple teams
+void AGameState_Base::SetTeamLives(int TeamID, int LivesCount)
+{
+    if (PlayerTeams.Num())
+    {
+        FPlayerTeam* PlayerTeam = &PlayerTeams[0];
+        PlayerTeam->LifeCount = LivesCount;
     }
 }
 

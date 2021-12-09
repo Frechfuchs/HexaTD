@@ -47,6 +47,8 @@ public:
 	void CheckForWaveFinished();
 	void ForbidPlayersBuilding();
 	bool IsBuildingPhase();
+	UFUNCTION(BlueprintCallable)
+	void ResetGame();
 
 protected:
 

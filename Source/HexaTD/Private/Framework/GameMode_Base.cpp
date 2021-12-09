@@ -6,6 +6,7 @@
 #include "AI/GoalPoint.h"
 #include "AI/SpawnPoint.h"
 #include "AI/GraphAStarNavMesh.h"
+#include "Framework/Building_Base.h"
 #include "Framework/GameState_Base.h"
 #include "Framework/PlayerController_Base.h"
 #include "Framework/PlayerPawn_Base.h"
@@ -328,4 +329,53 @@ void AGameMode_Base::ForbidPlayersBuilding()
 bool AGameMode_Base::IsBuildingPhase()
 {
     return MatchState == MatchStateBuildingPhase;
+}
+
+/**
+ * @brief TODO
+ */
+void AGameMode_Base::ResetGame()
+{
+    if (MatchState == MatchStateGameOver)
+    {
+        // Reset everything
+        UWorld* World = GetWorld();
+        // Destroy Actors
+        TArray<AActor*> Enemies;
+        TArray<AActor*> Buildings;
+        UGameplayStatics::GetAllActorsOfClass(World, AEnemy_Base::StaticClass(), Enemies);
+        UGameplayStatics::GetAllActorsOfClass(World, ABuilding_Base::StaticClass(), Buildings);
+
+        for (AActor* Enemy : Enemies)
+        {
+            Enemy->Destroy();
+        }
+        for (AActor* Building : Buildings)
+        {
+            Building->Destroy();
+        }
+
+        // Reset GameState
+        // TODO: Multiple teams
+        GameState->SetTeamLives(0, 20);
+        GameState->SetGameOver(false);
+        GameState->WaveCount = 0;
+        
+        // GameState Replication for host
+        GameState->OnRep_GameOverUpdated();
+        GameState->OnRep_PlayerTeamsUpdated();
+
+        // Reset PlayerStates
+        for (APlayerController_Base* PC : PlayerControllers)
+        {
+            APlayerState_Base* PlayerState = PC->GetPlayerState<APlayerState_Base>();
+            if (PlayerState)
+            {
+                PlayerState->ResourceAmount = 0;
+            }
+        }
+
+        // Start in BuildingPhase
+        SetMatchState(MatchStateBuildingPhase);
+    }
 }

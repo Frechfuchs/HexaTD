@@ -38,6 +38,8 @@ public:
 	void CreateTeams();
 	/** TODO */
 	void TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOver);
+	/** TODO */
+	void SetTeamLives(int TeamID, int LivesCount);
 	/**
 	 * Replication
 	 */
