@@ -158,7 +158,8 @@ void APlayerController_Base::SetupInputComponent()
  */
 void APlayerController_Base::InputClick()
 {
-    if (PlayerState && PlayerState->GetAllowBuilding() && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
+    if (PlayerState && PlayerState->GetAllowBuilding() && 
+        SelectedBuildingPreview && HasEnoughResources(SelectedBuildingPreview->ResourceCost))
     {
         bool IsValidPosition;
         FVector Location;

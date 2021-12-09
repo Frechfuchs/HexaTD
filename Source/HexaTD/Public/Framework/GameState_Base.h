@@ -30,18 +30,12 @@ class HEXATD_API AGameState_Base : public AGameState
 
 public:
 	/**
-	 * Overrides
-	 */
-	/* virtual void HandleBeginPlay() override;
-	virtual void OnRep_MatchState() override; */
-	// GetDefaultGameMode() -> returns probably correct GameMode Object
-
-	/**
 	 * Gameplay
 	 */
-	/* void BindPlayerReadyDelegates(); */
-	/* void OnChangePlayerReady(); */
-	bool IsReadyToStartWavePhase();
+	/** TODO */
+	void CreateTeams();
+	/** TODO */
+	void TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOver);
 	/**
 	 * @brief Called by GameMode.
 	 * Calls the Delegate OnMatchStateBuildPhase so clients can update accordingly.

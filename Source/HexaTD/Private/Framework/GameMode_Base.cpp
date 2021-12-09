@@ -93,6 +93,9 @@ void AGameMode_Base::StartPlay()
     {
         GraphAStarNavMesh->SetHexGrid(HexGrid);
     }
+
+    // Setup GameState
+    if (GameState) GameState->CreateTeams();
 }
 
 /**
@@ -151,7 +154,7 @@ bool AGameMode_Base::ReadyToStartMatch()
  */
 bool AGameMode_Base::ReadyToEndMatch() 
 {
-	return false;
+	return bIsGameOver;
 }
 
 /**
@@ -249,13 +252,17 @@ void AGameMode_Base::HandleWaveFinishedSpawn()
  * @brief TODO
  * 
  * @param TeamID 
- * @param LifesCount 
+ * @param LivesCount 
  */
-void AGameMode_Base::TeamLosingLifes(int TeamID, int LifesCount)
+void AGameMode_Base::TeamLosingLives(int TeamID, int LivesCount)
 {
-	// TODO: Subtract Life from GameState
-    //GameState->
+    bool IsGameOver = false;
     CheckForWaveFinished();
+    GameState->TeamLosingLives(TeamID, LivesCount, IsGameOver);
+    if (IsGameOver)
+    {
+        bIsGameOver = true;
+    }
 }
 
 /**

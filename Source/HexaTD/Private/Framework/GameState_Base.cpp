@@ -7,47 +7,31 @@
  * @brief 
  * 
  */
-/* void AGameState_Base::HandleBeginPlay()
+void AGameState_Base::CreateTeams()
 {
+    // TODO: Refactor for multiple Teams.
+    PlayerTeams.Empty();
 
-} */
+    FPlayerTeam PlayerTeam;
+    PlayerTeam.LifeCount = 20;
+    PlayerTeam.TeamID = 0;
+    PlayerTeams.Add(PlayerTeam);
+}
 
 /**
  * @brief 
  * 
+ * @param TeamID 
+ * @param LifesCount 
  */
-/* void AGameState_Base::OnRep_MatchState()
+void AGameState_Base::TeamLosingLives(int TeamID, int LivesCount, bool& IsGameOver)
 {
-
-} */
-
-/**
- * @brief 
- * 
- */
-/* void AGameState_Base::BindPlayerReadyDelegates()
-{
-
-} */
-
-/**
- * @brief 
- * 
- */
-/* void AGameState_Base::OnChangePlayerReady()
-{
-
-} */
-
-/**
- * @brief 
- * 
- * @return true 
- * @return false 
- */
-bool AGameState_Base::IsReadyToStartWavePhase()
-{
-    return false;
+    if (PlayerTeams.Num())
+    {
+        FPlayerTeam PlayerTeam = PlayerTeams[0];
+        PlayerTeam.LifeCount -= LivesCount;
+        IsGameOver = PlayerTeam.LifeCount <= 0;
+    }
 }
 
 // TODO: REMOVE

@@ -42,7 +42,7 @@ public:
 	void HandlePlayerIsReady();
 	void HandleWaveFinishedSpawn();
 	UFUNCTION(BlueprintCallable)
-	void TeamLosingLifes(int TeamID, int LifesCount);
+	void TeamLosingLives(int TeamID, int LivesCount);
 	void OccupieSystemGridSpaces();
 	void CheckForWaveFinished();
 
@@ -57,6 +57,7 @@ private:
 	// TODO: Can there be multiple?
 	ASpawnPoint* SpawnPoint;
 	TArray<AActor*> CheckPoints;
+	bool bIsGameOver = false;
 	bool bWaveFinishedSpawn = false;
 	FName MatchStateWaitToStart = "WaitingToStart";
 	FName MatchStateInProgress = "InProgress";
