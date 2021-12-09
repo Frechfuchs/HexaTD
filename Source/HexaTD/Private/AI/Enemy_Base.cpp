@@ -2,6 +2,7 @@
 
 
 #include "AI/Enemy_Base.h"
+#include "Components/CapsuleComponent.h"
 #include "Framework/GameMode_Base.h"
 #include "UI/HealthbarComponent.h"
 
@@ -18,6 +19,8 @@ AEnemy_Base::AEnemy_Base()
 	Healthbar = CreateDefaultSubobject<UHealthbarComponent>(TEXT("HealthbarComponent"));
 	Healthbar->SetupAttachment(RootComponent);
 
+	// CapsuleComponent
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
 /**
