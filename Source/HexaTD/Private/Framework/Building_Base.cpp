@@ -5,6 +5,7 @@
 #include "AI/Enemy_Base.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 /**
  * @brief Construct a new ABuilding_Base object
@@ -96,6 +97,48 @@ void ABuilding_Base::Tick(float DeltaTime)
 /**
  * @brief TODO
  * 
+ */
+void ABuilding_Base::Upgrade()
+{
+	Level++;
+	Effect.Damage += Effect.Damage * 1.5f;
+	// broadcast for host
+	OnLevelChanged.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param OutLifetimeProps 
+ */
+void ABuilding_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+    DOREPLIFETIME(ABuilding_Base, Level);
+}
+
+/**
+ * @brief 
+ * 
+ */
+void ABuilding_Base::ClientOnLevelChanged_Implementation()
+{
+	OnLevelChanged.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void ABuilding_Base::OnRep_LevelChanged()
+{
+	ClientOnLevelChanged();
+}
+
+/**
+ * @brief TODO
+ * 
  * @param IsPreview 
  */
 void ABuilding_Base::SetIsPreview(bool IsPreview)
@@ -125,6 +168,26 @@ void ABuilding_Base::SetMeshMaterial(UMaterialInterface* Material)
 	{
 		StaticMeshComponent->SetMaterial(i, Material);
 	}
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return int32 
+ */
+int32 ABuilding_Base::GetUpgradeCost() const
+{
+	return (int32)FGenericPlatformMath::Pow((float)Level, 2.f) + 1;
+}
+
+/**
+ * @brief TODO
+ * 
+ * @return int32 
+ */
+int32 ABuilding_Base::GetLevel() const
+{
+	return Level;
 }
 
 void ABuilding_Base::OnTargetCollisionBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -12,6 +12,8 @@ class UMaterialInterface;
 class UStaticMeshComponent;
 class USphereComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyBuildingChange);
+
 UCLASS()
 class HEXATD_API ABuilding_Base : public AActor
 {
@@ -22,7 +24,24 @@ public:
 	ABuilding_Base();
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+	/**
+	 * Gameplay
+	 */
+	void Upgrade();
+
+	/**
+	 * Replication
+	 */
+	/** TODO */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	/** TODO */
+	UFUNCTION(Client, Reliable)
+	void ClientOnLevelChanged();
+	/** TODO */
+	UFUNCTION()
+	void OnRep_LevelChanged();
+
 	/**
 	 * Getters & Setters
 	 */
@@ -30,10 +49,20 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsPreview() const;
 	void SetMeshMaterial(UMaterialInterface* Material);
+	UFUNCTION(BlueprintCallable)
+	int32 GetUpgradeCost() const;
+	UFUNCTION(BlueprintCallable)
+	int32 GetLevel() const;
 
-	// TODO
+	/**
+	 * Delegates
+	 */
+	FDelegate_NotifyBuildingChange OnLevelChanged;
+
+	/** TODO */
 	UPROPERTY(EditAnywhere)
 	bool bIsPreview = false;
+	/** TODO */
 	UPROPERTY(EditDefaultsOnly)
 	int32 ResourceCost = 1;
 
@@ -49,6 +78,8 @@ protected:
 	USphereComponent* TargetCollisionComponent;
 	UPROPERTY(EditDefaultsOnly)
 	FEffect Effect;
+	UPROPERTY(ReplicatedUsing = OnRep_LevelChanged)
+	int32 Level = 1;
 
 private:
 	UFUNCTION()

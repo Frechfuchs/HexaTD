@@ -8,7 +8,6 @@
 #include "HexGrid/HexGrid.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstance.h"
-#include "Net/UnrealNetwork.h"
 
 /**
  * @brief Called every frame
@@ -82,6 +81,19 @@ void APlayerController_Base::DestroySelectedBuilding()
     }
 }
 
+/**
+ * @brief TODO
+ * 
+ */
+void APlayerController_Base::UpgradeSelectedBuilding()
+{
+    //UE_LOG(LogTemp, Warning, TEXT("UpgradeCost: %d"), SelectedBuilding->GetUpgradeCost());
+    if (SelectedBuilding && HasEnoughResources(SelectedBuilding->GetUpgradeCost()))
+    {
+        ServerUpgradeBuilding(SelectedBuilding);
+    }
+}
+
 // TODO: Use CubeCoords instead of Location
 /**
  * @brief Spawn a selected building on the server
@@ -125,6 +137,37 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
 void APlayerController_Base::ServerDestroyBuilding_Implementation(ABuilding_Base* Building)
 {
     if (Building) Building->Destroy();
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param Building 
+ */
+void APlayerController_Base::ServerUpgradeBuilding_Implementation(ABuilding_Base* Building)
+{
+    if (Building)
+    {
+        int32 UpgradeCost = Building->GetUpgradeCost();
+        if (HasEnoughResources(UpgradeCost))
+        {
+            PlayerState->ResourceAmount -= UpgradeCost;
+            PlayerState->OnRep_ResourceAmountUpdated();
+            Building->Upgrade();
+            // Broadcast for host, client will be notified via OnRep_Level in Building
+            BuildingSelected.Broadcast();
+        }
+    }
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param Building 
+ */
+void APlayerController_Base::ClientPostUpgradeBuilding_Implementation()
+{
+    BuildingSelected.Broadcast();
 }
 
 /**
@@ -221,10 +264,17 @@ void APlayerController_Base::InputClick()
             if (Actor->IsA(ABuilding_Base::StaticClass()))
             {
                 SelectedBuilding = Cast<ABuilding_Base>(Actor);
+                // bind for level upgrade notification
+                SelectedBuilding->OnLevelChanged.AddDynamic(this, &APlayerController_Base::ClientPostUpgradeBuilding);
                 BuildingSelected.Broadcast();
             }
             else
             {
+                // unbind from selected building delegate
+                if (SelectedBuilding && SelectedBuilding->OnLevelChanged.IsBound())
+                {
+                    SelectedBuilding->OnLevelChanged.RemoveDynamic(this, &APlayerController_Base::ClientPostUpgradeBuilding);
+                }
                 SelectedBuilding = nullptr;
                 BuildingSelected.Broadcast();
             }

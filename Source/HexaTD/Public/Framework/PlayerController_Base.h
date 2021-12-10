@@ -32,8 +32,12 @@ public:
 	/** Set SelectedBuildingPreview and spawn it in preview mode */
 	UFUNCTION(BlueprintCallable)
 	void SetSelectedBuildingPreview(TSubclassOf<ABuilding_Base> BuildingClass, UMaterialInstance* MValid, UMaterialInstance* MInvalid);
+	/** TODO */
 	UFUNCTION(BlueprintCallable)
-	void DestroySelectedBuilding();	
+	void DestroySelectedBuilding();
+	/** TODO */
+	UFUNCTION(BlueprintCallable)
+	void UpgradeSelectedBuilding();	
 
 	/**
 	 * Replication
@@ -41,8 +45,15 @@ public:
 	/** TODO */
 	UFUNCTION(Server, Reliable)
 	void ServerSpawnBuilding(FVector Location, TSubclassOf<ABuilding_Base> BuildingClass);
+	/** TODO */
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyBuilding(ABuilding_Base* Building);
+	/** TODO */
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeBuilding(ABuilding_Base* Building);
+	/** TODO */
+	UFUNCTION(Client, Reliable)
+	void ClientPostUpgradeBuilding();
 	/** TODO */
 	UFUNCTION(Server, Reliable)
 	void ServerInitializePostLogin();
@@ -53,12 +64,14 @@ public:
 	/**
 	 * Getters & Setters
 	 */
+	/** TODO */
 	UFUNCTION(BlueprintCallable)
 	ABuilding_Base* GetSelectedBuilding() const;
 
 	/**
 	 * Delegates
 	 */
+	/** TODO */
 	UPROPERTY(BlueprintAssignable)
 	FDelegate_NotifyPlayerControllerChange BuildingSelected;
 
