@@ -3,8 +3,10 @@
 
 #include "Framework/Building_Base.h"
 #include "AI/Enemy_Base.h"
+#include "Components/DecalComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Materials/Material.h"
 #include "Net/UnrealNetwork.h"
 
 /**
@@ -33,8 +35,8 @@ ABuilding_Base::ABuilding_Base()
 	TargetCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("RangeCollision"));
 	TargetCollisionComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	TargetCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	TargetCollisionComponent->SetSphereRadius(300.f);
-	TargetCollisionComponent->SetVisibility(true);
+	TargetCollisionComponent->SetSphereRadius(Range);
+	TargetCollisionComponent->SetVisibility(false);
 	TargetCollisionComponent->SetHiddenInGame(false);
 	TargetCollisionComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	FScriptDelegate BeginOverlapDelegate;
@@ -44,6 +46,19 @@ ABuilding_Base::ABuilding_Base()
 	EndOverlapDelegate.BindUFunction(this, "OnTargetCollisionEndOverlap");
 	TargetCollisionComponent->OnComponentEndOverlap.Add(EndOverlapDelegate);
 	TargetCollisionComponent->SetupAttachment(RootComponent);
+
+	// DecalComponent
+	static ConstructorHelpers::FObjectFinder<UMaterial> DecalMaterial(TEXT("Material'/Game/HexaTD/Materials/System/M_RangeDecal.M_RangeDecal'"));
+	DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("RangeIndicator"));
+	DecalComponent->SetRelativeRotation(FRotator(90.f, 0.f, 0.f));
+	DecalComponent->SetVisibility(false);
+	if (DecalMaterial.Object)
+	{
+    	UMaterial* RangeIndicatorMaterial = Cast<UMaterial>(DecalMaterial.Object);
+		DecalComponent->SetDecalMaterial(RangeIndicatorMaterial);
+		DecalComponent->DecalSize = FVector(Range, Range, Range);
+	}
+	DecalComponent->SetupAttachment(RootComponent);
 
 	// Props
 	bReplicates = true;
@@ -64,12 +79,15 @@ void ABuilding_Base::BeginPlay()
 	// In our constructor bIsPreview is not set yet, so we need to put preview-related code here:
 	if (bIsPreview)
 	{
+		// TODO: Remove one of the two commands here (which ever works stays)
 		PrimaryActorTick.bCanEverTick = false;
+		SetActorTickEnabled(false);
 		bReplicates = false;
 		bCanUseEffect = false;
 
 		BodyCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		TargetCollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		DecalComponent->SetVisibility(true);
 	}
 }
 
@@ -82,7 +100,8 @@ void ABuilding_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//if (bIsPreview) UE_LOG(LogTemp, Error, TEXT("I SHOULD NOT BE TICKING!"));
+	// TODO: Remove if fixed
+	if (bIsPreview) UE_LOG(LogTemp, Error, TEXT("I SHOULD NOT BE TICKING!"));
 	if (bCanUseEffect && HasTarget())
 	{
 		bCanUseEffect = false;
@@ -190,6 +209,26 @@ int32 ABuilding_Base::GetLevel() const
 	return Level;
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param Visibility 
+ */
+void ABuilding_Base::SetDecalVisibility(bool Visibility)
+{
+	DecalComponent->SetVisibility(Visibility);
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param OverlappedComp 
+ * @param OtherActor 
+ * @param OtherComp 
+ * @param OtherBodyIndex 
+ * @param bFromSweep 
+ * @param SweepResult 
+ */
 void ABuilding_Base::OnTargetCollisionBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->GetClass()->ImplementsInterface(UEffectable::StaticClass()))
@@ -203,6 +242,16 @@ void ABuilding_Base::OnTargetCollisionBeginOverlap(UPrimitiveComponent* Overlapp
 	}
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param OverlappedComp 
+ * @param OtherActor 
+ * @param OtherComp 
+ * @param OtherBodyIndex 
+ * @param bFromSweep 
+ * @param SweepResult 
+ */
 void ABuilding_Base::OnTargetCollisionEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor->GetClass()->ImplementsInterface(UEffectable::StaticClass()))
@@ -216,17 +265,31 @@ void ABuilding_Base::OnTargetCollisionEndOverlap(UPrimitiveComponent* Overlapped
 	}
 }
 
+/**
+ * @brief TODO
+ * 
+ * @return true 
+ * @return false 
+ */
 bool ABuilding_Base::HasTarget() const
 {
 	return Targets.Num() > 0;
 }
 
+/**
+ * @brief TODO
+ * 
+ * @return AEnemy_Base* 
+ */
 AEnemy_Base* ABuilding_Base::GetTarget() const
 {
 	// TODO: Implement targeting
 	return Targets[0];
 }
 
+/**
+ * @brief TODO
+ */
 void ABuilding_Base::UseEffect()
 {
 	AEnemy_Base* Target = GetTarget();
@@ -237,6 +300,10 @@ void ABuilding_Base::UseEffect()
 	}
 }
 
+/**
+ * @brief TODO
+ * 
+ */
 void ABuilding_Base::ResetEffectDelay()
 {
 	bCanUseEffect = true;

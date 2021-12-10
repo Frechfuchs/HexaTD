@@ -260,21 +260,27 @@ void APlayerController_Base::InputClick()
         AActor* Actor = HitResult.GetActor();
         if (Actor)
         {
+            // When another building was selected, unselect old one
+            // TODO: Refactor to UnSelectBuilding() for reuse
+            if (SelectedBuilding)
+            {
+                SelectedBuilding->SetDecalVisibility(false);
+                // Unbind from selected building delegate
+                if (SelectedBuilding->OnLevelChanged.IsBound())
+                    SelectedBuilding->OnLevelChanged.RemoveDynamic(this, &APlayerController_Base::ClientPostUpgradeBuilding);
+            }
             // Check for Building
             if (Actor->IsA(ABuilding_Base::StaticClass()))
             {
+ 
                 SelectedBuilding = Cast<ABuilding_Base>(Actor);
+                SelectedBuilding->SetDecalVisibility(true);
                 // bind for level upgrade notification
                 SelectedBuilding->OnLevelChanged.AddDynamic(this, &APlayerController_Base::ClientPostUpgradeBuilding);
                 BuildingSelected.Broadcast();
             }
             else
             {
-                // unbind from selected building delegate
-                if (SelectedBuilding && SelectedBuilding->OnLevelChanged.IsBound())
-                {
-                    SelectedBuilding->OnLevelChanged.RemoveDynamic(this, &APlayerController_Base::ClientPostUpgradeBuilding);
-                }
                 SelectedBuilding = nullptr;
                 BuildingSelected.Broadcast();
             }

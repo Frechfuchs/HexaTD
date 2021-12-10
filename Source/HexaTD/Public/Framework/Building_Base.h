@@ -8,6 +8,7 @@
 #include "Building_Base.generated.h"
 
 class AEnemy_Base;
+class UDecalComponent;
 class UMaterialInterface;
 class UStaticMeshComponent;
 class USphereComponent;
@@ -45,14 +46,21 @@ public:
 	/**
 	 * Getters & Setters
 	 */
+	/** TODO */
 	void SetIsPreview(bool IsPreview);
+	/** TODO */
 	UFUNCTION(BlueprintCallable)
 	bool GetIsPreview() const;
+	/** TODO */
 	void SetMeshMaterial(UMaterialInterface* Material);
+	/** TODO */
 	UFUNCTION(BlueprintCallable)
 	int32 GetUpgradeCost() const;
+	/** TODO */
 	UFUNCTION(BlueprintCallable)
 	int32 GetLevel() const;
+	/** TODO */
+	void SetDecalVisibility(bool Visibility);
 
 	/**
 	 * Delegates
@@ -76,10 +84,13 @@ protected:
 	USphereComponent* BodyCollisionComponent;
 	// TODO: Move to TargetComponent?
 	USphereComponent* TargetCollisionComponent;
+	UDecalComponent* DecalComponent;
 	UPROPERTY(EditDefaultsOnly)
 	FEffect Effect;
 	UPROPERTY(ReplicatedUsing = OnRep_LevelChanged)
 	int32 Level = 1;
+	UPROPERTY(EditDefaultsOnly)
+	float Range = 300.f;
 
 private:
 	UFUNCTION()
