@@ -136,7 +136,12 @@ void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location
  */
 void APlayerController_Base::ServerDestroyBuilding_Implementation(ABuilding_Base* Building)
 {
-    if (Building) Building->Destroy();
+    if (Building)
+    {
+        bool Success;
+        HexGrid->FreeOccupiedGridSpace(Building->GetActorLocation(), Success);
+        if (Success) Building->Destroy();
+    } 
 }
 
 /**
