@@ -12,7 +12,7 @@ AHexGrid::AHexGrid()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
 	// Add RegularTileComponent
 	RegularTile = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("ISM_RegularTile"));
-	RegularTile->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform, TEXT("ARegularTile"));
+	RegularTile->SetupAttachment(RootComponent);
 }
 
 /* Called when the game starts or when spawned */
