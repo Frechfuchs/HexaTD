@@ -4,7 +4,6 @@
 #include "Framework/OnlineGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "OnlineSubsystem.h"
-#include "OnlineSessionSettings.h"
 
 /**
  * @brief 
@@ -28,25 +27,28 @@ void UOnlineGameInstance::Init()
  * @brief 
  * 
  */
-void UOnlineGameInstance::CreateServer()
+void UOnlineGameInstance::CreateServer(FName SessionName, int32 NumberOfPlayers, bool IsLan, bool AllowJoinInProgress)
 {
+    // TODO: Remove SessionName, its unused
     UE_LOG(LogTemp, Warning, TEXT("Creating Server..."));
     FOnlineSessionSettings SessionSettings;
-    SessionSettings.bAllowJoinInProgress = true;
+    SessionSettings.NumPublicConnections = NumberOfPlayers;
+    SessionSettings.bIsLANMatch = IsLan;
+    SessionSettings.bAllowJoinViaPresence = true;
+    SessionSettings.bAllowJoinInProgress = AllowJoinInProgress;
+    SessionSettings.bAllowInvites = true;
     SessionSettings.bIsDedicated = false;
-    SessionSettings.bIsLANMatch = true;
     SessionSettings.bShouldAdvertise = true;
     SessionSettings.bUsesPresence = true;
-    SessionSettings.NumPublicConnections = 4;
 
     SessionInterface->CreateSession(0, FName("My Session"), SessionSettings);
 }
 
 /**
- * @brief 
+ * @brief TODO
  * 
  */
-void UOnlineGameInstance::JoinServer()
+void UOnlineGameInstance::FindSessions()
 {
     UE_LOG(LogTemp, Warning, TEXT("Searching Server..."));
     SessionSearch = MakeShareable(new FOnlineSessionSearch());
@@ -59,7 +61,48 @@ void UOnlineGameInstance::JoinServer()
 }
 
 /**
+ * @brief TODO
+ * 
+ * @param Session 
+ */
+void UOnlineGameInstance::JoinHexSession(FHexSessionResult Session)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Joining Server..."));
+    SessionInterface->JoinSession(0, FName("My Session"), Session.OnlineResult);
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param SessionResult 
+ * @return FString 
+ */
+FString UOnlineGameInstance::GetSessionName(FHexSessionResult SessionResult) const
+{
+    // TODO: Move to UI
+    UE_LOG(LogTemp, Warning, TEXT("Ping is: %d"), SessionResult.OnlineResult.PingInMs);
+    return SessionResult.OnlineResult.Session.OwningUserName;
+}
+
+/**
  * @brief 
+ * 
+ * @return IOnlineSessionPtr 
+ */
+IOnlineSessionPtr UOnlineGameInstance::GetSessionInterface() const
+{
+    if (SessionInterface.IsValid())
+    {
+        return SessionInterface;
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+/**
+ * @brief TODO
  * 
  * @param ServerName 
  * @param Success 
@@ -74,7 +117,7 @@ void UOnlineGameInstance::OnCreateSessionComplete(FName ServerName, bool Success
 }
 
 /**
- * @brief 
+ * @brief TODO
  * 
  * @param Success 
  */
@@ -84,19 +127,30 @@ void UOnlineGameInstance::OnFindSessionComplete(bool Success)
 
     if (Success)
     {
-        TArray<FOnlineSessionSearchResult> SearchResults = SessionSearch->SearchResults;
-        UE_LOG(LogTemp, Warning, TEXT("Session count: %i"), SearchResults.Num());
+        TArray<FOnlineSessionSearchResult> OnlineSearchResults = SessionSearch->SearchResults;
+        // Create a blueprinttype-copy if SearchResults to pass via broadcast
+        TArray<FHexSessionResult> SearchResults;
+        UE_LOG(LogTemp, Warning, TEXT("Session count: %i"), OnlineSearchResults.Num());
 
-        if (SearchResults.Num())
+        for (FOnlineSessionSearchResult Ossr : OnlineSearchResults)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Joining Server..."));
-            SessionInterface->JoinSession(0, FName("My Session"), SearchResults[0]);
+            FHexSessionResult bpsr;
+            bpsr.OnlineResult = Ossr;
+            SearchResults.Add(bpsr);
+        }
+
+        OnSessionsFound.Broadcast(SearchResults);
+
+        if (OnlineSearchResults.Num() > 0)
+        {
+            // TODO: Move to Join Session
+            SessionInterface->JoinSession(0, FName("My Session"), OnlineSearchResults[0]);
         }
     }
 }
 
 /**
- * @brief 
+ * @brief TODO
  * 
  * @param SessionName 
  * @param Result 

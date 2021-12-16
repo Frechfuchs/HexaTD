@@ -11,6 +11,7 @@ class AGameState_Base;
 class AHexGrid;
 class APlayerController_Base;
 class ASpawnPoint;
+class UOnlineGameInstance;
 
 /**
  * 
@@ -30,7 +31,6 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void StartPlay() override;
 	virtual void OnMatchStateSet() override;
-	bool ReadyToStartMatch();
 
 	/**
 	 * Gameplay
@@ -51,8 +51,13 @@ public:
 	void ResetGame();
 
 protected:
+	/**
+	 * Overrides
+	 */
+	bool ReadyToStartMatch_Implementation() override;
 
 private:
+	UOnlineGameInstance* GameInstance;
 	TArray<APlayerController_Base*> PlayerControllers;
 	AGameState_Base* GameState;
 	AHexGrid* HexGrid;

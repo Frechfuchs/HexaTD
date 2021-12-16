@@ -8,6 +8,7 @@
 #include "AI/GraphAStarNavMesh.h"
 #include "Framework/Building_Base.h"
 #include "Framework/GameState_Base.h"
+#include "Framework/OnlineGameInstance.h"
 #include "Framework/PlayerController_Base.h"
 #include "Framework/PlayerPawn_Base.h"
 #include "Framework/PlayerState_Base.h"
@@ -31,6 +32,9 @@ AGameMode_Base::AGameMode_Base()
     PlayerStateClass = APlayerState_Base::StaticClass();
     PlayerControllerClass = APlayerController_Base::StaticClass();
     SpectatorClass = APlayerPawn_Base::StaticClass();
+
+    // GameMode Config
+    //bDelayedStart = true;
 }
 
 /**
@@ -72,6 +76,7 @@ void AGameMode_Base::StartPlay()
 
     // Get references
     UWorld* World = GetWorld();
+    GameInstance = GetGameInstance<UOnlineGameInstance>();
     GameState = GetGameState<AGameState_Base>();
     HexGrid = Cast<AHexGrid>(UGameplayStatics::GetActorOfClass(World, AHexGrid::StaticClass()));
     GoalPoint = UGameplayStatics::GetActorOfClass(World, AGoalPoint::StaticClass());
@@ -80,6 +85,7 @@ void AGameMode_Base::StartPlay()
     AGraphAStarNavMesh* GraphAStarNavMesh = Cast<AGraphAStarNavMesh>(UGameplayStatics::GetActorOfClass(World, AGraphAStarNavMesh::StaticClass()));
 
     // ErrorHandling
+    if (!GameInstance) UE_LOG(LogTemp, Error, TEXT("GAMEINSTANCE NOT FOUND"));
     if (!GameState) UE_LOG(LogTemp, Error, TEXT("GAMESTATE NOT FOUND"));
     if (!HexGrid) UE_LOG(LogTemp, Error, TEXT("HEXGRID NOT FOUND"));
     if (!GoalPoint) UE_LOG(LogTemp, Error, TEXT("GOALPOINT NOT FOUND"));
@@ -146,9 +152,39 @@ void AGameMode_Base::OnMatchStateSet()
  * @return true 
  * @return false 
  */
-bool AGameMode_Base::ReadyToStartMatch() 
+bool AGameMode_Base::ReadyToStartMatch_Implementation() 
 {
-    return true;
+    auto ActivePlayers = GetNumPlayers();
+    auto MaxPlayers = 8; // Fallback value
+    // TODO: This needs refactoring: The GameInstance is not available when the Game initializes.
+    // So we wait until it is available.
+    if (GameInstance)
+    {
+        // TODO: When it is available and we are testing with only one player, MaxPlayer should equal to 1:
+        MaxPlayers = 1;
+        auto SessionInterface = GameInstance->GetSessionInterface();
+        if (SessionInterface)
+        {
+            // TODO: Refactor the magic FName("My Session") to something configurable.
+            auto SessionSettings = SessionInterface->GetSessionSettings(FName("My Session"));
+            if (SessionSettings)
+            {
+                // TODO: When the Setting is found, we can safely set MaxPlayer by the number to host set:
+                MaxPlayers = SessionSettings->NumPublicConnections;
+                UE_LOG(LogTemp, Warning, TEXT("NumPlayers: %d, MaxPlayers: %d"), NumPlayers, MaxPlayers);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("NO SESSION SETTINGS"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Warning, TEXT("NO SESSION INTERFACE"));
+        }
+    }
+    //GetNumPlayers() == GameInstance->GetSessionInterface()->GetSessionSettings(FName("My Session")).NumPublicConnections;
+    return ActivePlayers >= MaxPlayers;
 	//return GetNumPlayers() == GameSession->MaxPlayers;
 }
 
