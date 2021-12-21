@@ -388,7 +388,12 @@ void AGameMode_Base::ResetGame()
         }
         for (AActor* Building : Buildings)
         {
-            Building->Destroy();
+            bool Success;
+            HexGrid->FreeOccupiedGridSpace(Building->GetActorLocation(), Success);
+            if (Success)
+            {
+                Building->Destroy();
+            }
         }
 
         // Reset GameState
