@@ -3,6 +3,7 @@
 
 #include "AI/Enemy_Base.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Framework/GameMode_Base.h"
 #include "UI/HealthbarComponent.h"
 
@@ -66,11 +67,26 @@ void AEnemy_Base::RestoreHealth()
 	UpdateHealthbar();
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param Effect 
+ */
 void AEnemy_Base::Effect_Implementation(FEffect Effect)
 {
 	UpdateHitpoints(Effect.Damage);
+
+	if (Effect.IsSlow)
+	{
+		HandleSlowEffect(Effect);
+	}
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param Damage 
+ */
 void AEnemy_Base::UpdateHitpoints(float Damage)
 {
 	CurrentHitpoints -= Damage;
@@ -78,6 +94,44 @@ void AEnemy_Base::UpdateHitpoints(float Damage)
 	CheckForDeath();
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param Effect 
+ */
+void AEnemy_Base::HandleSlowEffect(FEffect Effect)
+{
+	if (!IsSlowed)
+	{
+		UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (MovementComponent)
+		{
+			MovementComponent->MaxWalkSpeed = MaxWalkSpeed * (1.f - Effect.SlowPercent);
+		}
+	}
+	IsSlowed = true;
+	float Delay = Effect.SlowTime;
+	// Clear Timer in case enemy was already slowed before
+	GetWorldTimerManager().ClearTimer(TimerHandleSlowEffect);
+	GetWorldTimerManager().SetTimer(TimerHandleSlowEffect, this, &AEnemy_Base::HandleRemoveSlowEffect, Delay, false);
+}
+
+/**
+ * @brief TODO
+ */
+void AEnemy_Base::HandleRemoveSlowEffect()
+{
+	IsSlowed = false;
+	UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	if (MovementComponent)
+	{
+		MovementComponent->MaxWalkSpeed = MaxWalkSpeed;
+	}
+}
+
+/**
+ * @brief TODO
+ */
 void AEnemy_Base::CheckForDeath()
 {
 	if (HasAuthority())

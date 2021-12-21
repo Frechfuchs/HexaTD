@@ -26,21 +26,29 @@ public:
 	void Effect(FEffect& Effect);
 	virtual void Effect_Implementation(FEffect Effect) override;
 
+	// TODO: Wrap with Getter & Setter
+	bool IsSlowed = false;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MaxHitpoints = 100;
 	UPROPERTY(EditAnywhere)
 	UHealthbarComponent* Healthbar;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxHitpoints = 100;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxWalkSpeed = 600.f;
 
 private:
 	void UpdateHealthbar();
 	void RestoreHealth();
 	void UpdateHitpoints(float Damage);
+	void HandleSlowEffect(FEffect Effect);
+	void HandleRemoveSlowEffect();
 	void CheckForDeath();
 
 	float CurrentHitpoints = 1;
 	AGameMode_Base* GameMode;
+	FTimerHandle TimerHandleSlowEffect;
 };

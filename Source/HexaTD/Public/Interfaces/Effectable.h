@@ -13,6 +13,13 @@ struct HEXATD_API FEffect
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	bool IsSlow = false;
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float SlowPercent = 0.f;
+	UPROPERTY(EditAnywhere)
+	float SlowTime = 0.f;
 };
 
 /**
