@@ -279,13 +279,12 @@ bool ABuilding_Base::HasTarget() const
 /**
  * @brief TODO
  * 
- * @return AEnemy_Base* 
+ * @return TArray<AEnemy_Base*> 
  */
-AEnemy_Base* ABuilding_Base::GetTarget_Implementation() const
+void ABuilding_Base::GetTargets_Implementation(TArray<AEnemy_Base*> &InTargets) const
 {
-	// TODO: Implement targeting
-	// Note: We don't need to check for Targets.Num, since we already check in HasTargets function
-	return Targets[0];
+	// Get first element in Targets
+	InTargets.Add(Targets[0]);
 }
 
 /**
@@ -293,11 +292,15 @@ AEnemy_Base* ABuilding_Base::GetTarget_Implementation() const
  */
 void ABuilding_Base::UseEffect()
 {
-	AEnemy_Base* Target = GetTarget();
+	TArray<AEnemy_Base*> LocTargets;
+	GetTargets(LocTargets);
 	// TODO: Refactor
-	if (Target->GetClass()->ImplementsInterface(UEffectable::StaticClass()))
+	for (AEnemy_Base* Target : LocTargets)
 	{
-		IEffectable::Execute_Effect(Target, Effect);
+		if (Target->GetClass()->ImplementsInterface(UEffectable::StaticClass()))
+		{
+			IEffectable::Execute_Effect(Target, Effect);
+		}
 	}
 }
 

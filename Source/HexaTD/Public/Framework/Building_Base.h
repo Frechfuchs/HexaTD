@@ -78,7 +78,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	UFUNCTION(BlueprintNativeEvent)
-	AEnemy_Base* GetTarget() const;
+	void GetTargets(TArray<AEnemy_Base*> &InTargets) const;
 
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* StaticMeshComponent;
