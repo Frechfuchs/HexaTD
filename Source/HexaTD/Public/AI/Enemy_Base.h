@@ -27,6 +27,7 @@ public:
 	virtual void Effect_Implementation(FEffect Effect) override;
 
 	// TODO: Wrap with Getter & Setter
+	UPROPERTY(BlueprintReadOnly)
 	bool IsSlowed = false;
 
 protected:
