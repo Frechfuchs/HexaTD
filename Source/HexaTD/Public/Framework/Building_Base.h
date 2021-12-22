@@ -95,6 +95,8 @@ protected:
 	float Range = 300.f;
 	UPROPERTY(EditDefaultsOnly)
 	float EffectDelay = 1.f;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<AEnemy_Base*> Targets;
 
 private:
 	UFUNCTION()
@@ -110,6 +112,4 @@ private:
 
 	UPROPERTY()
 	bool bCanUseEffect = false;
-	UPROPERTY()
-	TArray<AEnemy_Base*> Targets;
 };
