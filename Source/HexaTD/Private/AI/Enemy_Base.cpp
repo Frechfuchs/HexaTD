@@ -2,9 +2,11 @@
 
 
 #include "AI/Enemy_Base.h"
+#include "AI/SpawnPoint.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Framework/GameMode_Base.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "UI/HealthbarComponent.h"
 
 /**
@@ -80,6 +82,10 @@ void AEnemy_Base::Effect_Implementation(FEffect Effect)
 	{
 		HandleSlowEffect(Effect);
 	}
+	if (Effect.IsTeleport)
+	{
+		HandleTeleportEffect(Effect);
+	}
 }
 
 /**
@@ -126,6 +132,22 @@ void AEnemy_Base::HandleRemoveSlowEffect()
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = MaxWalkSpeed;
+	}
+}
+
+/**
+ * @brief TODO
+ */
+void AEnemy_Base::HandleTeleportEffect(FEffect Effect)
+{
+	if (Effect.TeleportType == EffectTeleportType::Spawn)
+	{
+		// TODO: When having multiple SpawnPoints, choose the one this Enemy spawned from
+		AActor* SpawnPoint = UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnPoint::StaticClass());
+		if (SpawnPoint)
+		{
+			SetActorLocation(SpawnPoint->GetActorLocation());
+		}
 	}
 }
 

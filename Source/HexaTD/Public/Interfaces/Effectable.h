@@ -6,6 +6,14 @@
 #include "UObject/Interface.h"
 #include "Effectable.generated.h"
 
+UENUM(BlueprintType)
+enum EffectTeleportType
+{
+  Spawn     	UMETA(DisplayName = "Spawn"),
+  // TODO: Implement teleport to last reached checkpoint
+  // Checkpoint    UMETA(DisplayName = "Checkpoint")
+};
+
 USTRUCT(BlueprintType)
 struct HEXATD_API FEffect
 {
@@ -20,6 +28,11 @@ struct HEXATD_API FEffect
 	float SlowPercent = 0.f;
 	UPROPERTY(EditAnywhere)
 	float SlowTime = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	bool IsTeleport = false;
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EffectTeleportType> TeleportType;
 };
 
 /**

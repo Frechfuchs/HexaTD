@@ -47,6 +47,7 @@ private:
 	void UpdateHitpoints(float Damage);
 	void HandleSlowEffect(FEffect Effect);
 	void HandleRemoveSlowEffect();
+	void HandleTeleportEffect(FEffect Effect);
 	void CheckForDeath();
 
 	float CurrentHitpoints = 1;
