@@ -77,6 +77,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintNativeEvent)
+	AEnemy_Base* GetTarget() const;
 
 	UPROPERTY(EditInstanceOnly)
 	UStaticMeshComponent* StaticMeshComponent;
@@ -91,6 +93,8 @@ protected:
 	int32 Level = 1;
 	UPROPERTY(EditDefaultsOnly)
 	float Range = 300.f;
+	UPROPERTY(EditDefaultsOnly)
+	float EffectDelay = 1.f;
 
 private:
 	UFUNCTION()
@@ -100,8 +104,6 @@ private:
 	UFUNCTION()
 	bool HasTarget() const;
 	UFUNCTION()
-	AEnemy_Base* GetTarget() const;
-	UFUNCTION()
 	void UseEffect();
 	UFUNCTION()
 	void ResetEffectDelay();
@@ -110,6 +112,4 @@ private:
 	bool bCanUseEffect = false;
 	UPROPERTY()
 	TArray<AEnemy_Base*> Targets;
-	UPROPERTY()
-	float EffectDelay = 1.f;
 };

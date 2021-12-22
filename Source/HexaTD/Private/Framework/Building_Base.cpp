@@ -281,9 +281,10 @@ bool ABuilding_Base::HasTarget() const
  * 
  * @return AEnemy_Base* 
  */
-AEnemy_Base* ABuilding_Base::GetTarget() const
+AEnemy_Base* ABuilding_Base::GetTarget_Implementation() const
 {
 	// TODO: Implement targeting
+	// Note: We don't need to check for Targets.Num, since we already check in HasTargets function
 	return Targets[0];
 }
 
