@@ -82,6 +82,10 @@ void AEnemy_Base::Effect_Implementation(FEffect Effect)
 	{
 		HandleSlowEffect(Effect);
 	}
+	if (Effect.IsPoison)
+	{
+		HandlePoisonEffect(Effect);
+	}
 	if (Effect.IsTeleport)
 	{
 		HandleTeleportEffect(Effect);
@@ -132,6 +136,37 @@ void AEnemy_Base::HandleRemoveSlowEffect()
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = MaxWalkSpeed;
+	}
+}
+
+
+/**
+ * @brief TODO
+ * 
+ * @param Effect 
+ */
+void AEnemy_Base::HandlePoisonEffect(FEffect Effect)
+{
+	IsPoisoned = true;
+	float Interval = Effect.PoisonInterval;
+	CurrentPoisonEffect = Effect;
+	CurrentPoisonTickCount = 0;
+	// Clear Timer in case enemy was already poisoned before
+	GetWorldTimerManager().ClearTimer(TimerHandlePoisonEffect);
+	GetWorldTimerManager().SetTimer(TimerHandlePoisonEffect, this, &AEnemy_Base::HandlePoisonEffectInterval, Interval, true);
+}
+
+/**
+ * @brief TODO
+ */
+void AEnemy_Base::HandlePoisonEffectInterval()
+{
+	UpdateHitpoints(CurrentPoisonEffect.PoisonDamage);
+	CurrentPoisonTickCount++;
+	if (CurrentPoisonTickCount >= CurrentPoisonEffect.PoisonTickCount)
+	{
+		GetWorldTimerManager().ClearTimer(TimerHandlePoisonEffect);
+		IsPoisoned = false;
 	}
 }
 

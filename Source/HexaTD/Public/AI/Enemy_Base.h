@@ -29,6 +29,8 @@ public:
 	// TODO: Wrap with Getter & Setter
 	UPROPERTY(BlueprintReadOnly)
 	bool IsSlowed = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool IsPoisoned = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,10 +49,15 @@ private:
 	void UpdateHitpoints(float Damage);
 	void HandleSlowEffect(FEffect Effect);
 	void HandleRemoveSlowEffect();
+	void HandlePoisonEffect(FEffect Effect);
+	void HandlePoisonEffectInterval();
 	void HandleTeleportEffect(FEffect Effect);
 	void CheckForDeath();
 
 	float CurrentHitpoints = 1;
 	AGameMode_Base* GameMode;
 	FTimerHandle TimerHandleSlowEffect;
+	FTimerHandle TimerHandlePoisonEffect;
+	FEffect CurrentPoisonEffect;
+	int32 CurrentPoisonTickCount = 0;
 };

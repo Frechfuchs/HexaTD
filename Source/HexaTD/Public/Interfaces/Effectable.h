@@ -33,6 +33,15 @@ struct HEXATD_API FEffect
 	bool IsTeleport = false;
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EffectTeleportType> TeleportType;
+
+	UPROPERTY(EditAnywhere)
+	bool IsPoison = false;
+	UPROPERTY(EditAnywhere)
+	float PoisonDamage = 0.f;
+	UPROPERTY(EditAnywhere)
+	int32 PoisonTickCount = 0;
+	UPROPERTY(EditAnywhere)
+	float PoisonInterval = 0.f;
 };
 
 /**
