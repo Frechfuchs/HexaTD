@@ -3,6 +3,7 @@
 #include "AI/EnemyKillZone.h"
 #include "AI/Enemy_Base.h"
 #include "Components/BoxComponent.h"
+#include "Framework/GameMode_Base.h"
 
 // Sets default values
 AEnemyKillZone::AEnemyKillZone()
@@ -27,5 +28,13 @@ void AEnemyKillZone::OnBoxCollisionBeginOverlap(UPrimitiveComponent* OverlappedC
 	if (Enemy)
 	{
 		Enemy->Destroy();
+		if (!GameMode)
+		{
+			GameMode = Cast<AGameMode_Base>(GetWorld()->GetAuthGameMode());
+		}
+		if (GameMode)
+		{
+			GameMode->CheckForWaveFinished();
+		}
 	}
 }

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "EnemyKillZone.generated.h"
 
+class AGameMode_Base;
 class UBoxComponent;
 
 UCLASS()
@@ -23,4 +24,5 @@ protected:
 
 	UPROPERTY()
 	UBoxComponent* BoxComponent;
+	AGameMode_Base* GameMode;
 };
