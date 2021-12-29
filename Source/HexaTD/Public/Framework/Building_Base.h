@@ -68,7 +68,7 @@ public:
 	FDelegate_NotifyBuildingChange OnLevelChanged;
 
 	/** TODO */
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	bool bIsPreview = false;
 	/** TODO */
 	UPROPERTY(EditDefaultsOnly)

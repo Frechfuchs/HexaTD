@@ -42,6 +42,11 @@ struct HEXATD_API FEffect
 	int32 PoisonTickCount = 0;
 	UPROPERTY(EditAnywhere)
 	float PoisonInterval = 0.f;
+
+	UPROPERTY(EditAnywhere)
+	bool IsPushBack = false;
+	UPROPERTY(EditAnywhere)
+	float PushBackForce = 0.f;
 };
 
 /**

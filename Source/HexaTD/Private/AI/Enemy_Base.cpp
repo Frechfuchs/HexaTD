@@ -1,8 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "AIController.h"
 #include "AI/Enemy_Base.h"
 #include "AI/SpawnPoint.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "BrainComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Framework/GameMode_Base.h"
@@ -24,6 +27,10 @@ AEnemy_Base::AEnemy_Base()
 
 	// CapsuleComponent
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+	// MovementComponent
+	MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+	MovementComponent->FallingLateralFriction = FallingLateralFriction;
 }
 
 /**
@@ -35,7 +42,7 @@ void AEnemy_Base::BeginPlay()
 	Super::BeginPlay();
 
 	if (HasAuthority()) GameMode = Cast<AGameMode_Base>(GetWorld()->GetAuthGameMode());
-	
+
 	RestoreHealth();
 }
 
@@ -86,10 +93,27 @@ void AEnemy_Base::Effect_Implementation(FEffect Effect)
 	{
 		HandlePoisonEffect(Effect);
 	}
+	if (Effect.IsPushBack)
+	{
+		HandlePushBackEffect(Effect);
+	}
 	if (Effect.IsTeleport)
 	{
 		HandleTeleportEffect(Effect);
 	}
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param Hit 
+ */
+void AEnemy_Base::Landed(const FHitResult& Hit)
+{	
+	Super::Landed(Hit);
+	// Call HandlePostOnLanded after short delay
+	GetWorldTimerManager().ClearTimer(TimerHandlePostOnLanded);
+	GetWorldTimerManager().SetTimer(TimerHandlePostOnLanded, this, &AEnemy_Base::HandlePostOnLanded, PostOnLandedSlidingDelay, false);
 }
 
 /**
@@ -113,7 +137,6 @@ void AEnemy_Base::HandleSlowEffect(FEffect Effect)
 {
 	if (!IsSlowed)
 	{
-		UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
 		if (MovementComponent)
 		{
 			MovementComponent->MaxWalkSpeed = MaxWalkSpeed * (1.f - Effect.SlowPercent);
@@ -132,7 +155,6 @@ void AEnemy_Base::HandleSlowEffect(FEffect Effect)
 void AEnemy_Base::HandleRemoveSlowEffect()
 {
 	IsSlowed = false;
-	UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = MaxWalkSpeed;
@@ -167,6 +189,52 @@ void AEnemy_Base::HandlePoisonEffectInterval()
 	{
 		GetWorldTimerManager().ClearTimer(TimerHandlePoisonEffect);
 		IsPoisoned = false;
+	}
+}
+
+/**
+ * @brief TODO
+ * 
+ * @param Effect 
+ */
+void AEnemy_Base::HandlePushBackEffect(FEffect Effect)
+{
+	FVector BackwardsVector = GetActorForwardVector() * Effect.PushBackForce * -1;
+	FVector LaunchVector = FVector(BackwardsVector.X, BackwardsVector.Y, Effect.PushBackForce / 2);
+	LaunchCharacter(LaunchVector, true, true);
+	if (!AIController)
+	{
+		AIController = UAIBlueprintHelperLibrary::GetAIController(this);
+	}
+	if (AIController)
+	{
+		AIController->StopMovement();
+		UBrainComponent* BrainComponent = AIController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			FString StopLogicReason;
+			BrainComponent->StopLogic(StopLogicReason);
+			MovementComponent->GroundFriction = 0.f;
+			MovementComponent->BrakingDecelerationWalking = SlidingBrakingDecelerationWalking;
+		}
+	}
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void AEnemy_Base::HandlePostOnLanded()
+{
+	if (AIController)
+	{
+		UBrainComponent* BrainComponent = AIController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			MovementComponent->GroundFriction = NormalGroundFriction;
+			MovementComponent->BrakingDecelerationWalking = NormalBrakingDecelerationWalking;
+			BrainComponent->StartLogic();
+		}
 	}
 }
 

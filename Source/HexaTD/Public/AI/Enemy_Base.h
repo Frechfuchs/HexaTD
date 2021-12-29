@@ -9,6 +9,7 @@
 
 class UHealthbarComponent;
 class AGameMode_Base;
+class AAIController;
 
 UCLASS()
 class HEXATD_API AEnemy_Base : public ACharacter, public IEffectable
@@ -25,6 +26,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Broadcast")
 	void Effect(FEffect& Effect);
 	virtual void Effect_Implementation(FEffect Effect) override;
+	/** Handles the logic after push effect */
+	virtual void Landed(const FHitResult& Hit) override;
 
 	// TODO: Wrap with Getter & Setter
 	UPROPERTY(BlueprintReadOnly)
@@ -51,13 +54,23 @@ private:
 	void HandleRemoveSlowEffect();
 	void HandlePoisonEffect(FEffect Effect);
 	void HandlePoisonEffectInterval();
+	void HandlePushBackEffect(FEffect Effect);
+	void HandlePostOnLanded();
 	void HandleTeleportEffect(FEffect Effect);
 	void CheckForDeath();
 
-	float CurrentHitpoints = 1;
 	AGameMode_Base* GameMode;
+	UCharacterMovementComponent* MovementComponent;
+	AAIController* AIController;
+	float CurrentHitpoints = 1;
 	FTimerHandle TimerHandleSlowEffect;
 	FTimerHandle TimerHandlePoisonEffect;
+	FTimerHandle TimerHandlePostOnLanded;
 	FEffect CurrentPoisonEffect;
 	int32 CurrentPoisonTickCount = 0;
+	float FallingLateralFriction = 0.3f;
+	float NormalGroundFriction = 8.f;
+	float NormalBrakingDecelerationWalking = 2048.f;
+	float SlidingBrakingDecelerationWalking = 350.f;
+	float PostOnLandedSlidingDelay = 0.7f;
 };
