@@ -71,8 +71,10 @@ public:
 	UPROPERTY()
 	bool bIsPreview = false;
 	/** TODO */
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(BlueprintReadWrite)
 	int32 ResourceCost = 1;
+	UPROPERTY(BlueprintReadWrite)
+	FEffect Effect;
 
 protected:
 	// Called when the game starts or when spawned
@@ -87,8 +89,6 @@ protected:
 	// TODO: Move to TargetComponent?
 	USphereComponent* TargetCollisionComponent;
 	UDecalComponent* DecalComponent;
-	UPROPERTY(EditDefaultsOnly)
-	FEffect Effect;
 	UPROPERTY(ReplicatedUsing = OnRep_LevelChanged)
 	int32 Level = 1;
 	UPROPERTY(EditDefaultsOnly)
