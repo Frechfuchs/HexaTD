@@ -10,6 +10,14 @@ class APlayerState_Base;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDelegate_NotifyGameStateChange);
 
+UENUM(BlueprintType)
+enum GameOverReasonType
+{
+  None			UMETA(DisplayName = "None"),
+  EnemyWon		UMETA(DisplayName = "EnemyWon"),
+  TeamWon		UMETA(DisplayName = "TeamWon"),
+};
+
 USTRUCT(BlueprintType)
 struct HEXATD_API FPlayerTeam
 {
@@ -65,9 +73,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<FPlayerTeam> GetPlayerTeams() const;
 	UFUNCTION()
-	void SetGameOver(bool GameOver);
+	void SetGameOverReason(TEnumAsByte<GameOverReasonType> GameOver);
 	UFUNCTION(BlueprintCallable)
-	bool GetGameOver() const;
+	TEnumAsByte<GameOverReasonType> GetGameOverReason() const;
 
 	/**
 	 * Delegates
@@ -89,6 +97,6 @@ protected:
 	/** TODO */
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerTeamsUpdated)
 	TArray<FPlayerTeam> PlayerTeams;
-	UPROPERTY(ReplicatedUsing = OnRep_GameOverUpdated)
-	bool bIsGameOver = false;
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing = OnRep_GameOverUpdated)
+	TEnumAsByte<GameOverReasonType> GameOverReason = GameOverReasonType::None;
 };

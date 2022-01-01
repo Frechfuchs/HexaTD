@@ -247,7 +247,6 @@ void AGameMode_Base::HandleMatchStateWavePhase()
 void AGameMode_Base::HandleMatchStateGameOver()
 {
     ForbidPlayersBuilding();
-    GameState->SetGameOver(true);
     GameState->OnRep_GameOverUpdated();
 }
 
@@ -281,9 +280,10 @@ void AGameMode_Base::HandlePlayerIsReady()
 /**
  * @brief TODO
  */
-void AGameMode_Base::HandleWaveFinishedSpawn() 
+void AGameMode_Base::HandleWaveFinishedSpawn(bool IsLastWave) 
 {
 	bWaveFinishedSpawn = true;
+    bLastWaveSpawned = IsLastWave;
 }
 
 /**
@@ -300,6 +300,7 @@ void AGameMode_Base::TeamLosingLives(int TeamID, int LivesCount)
     GameState->OnRep_PlayerTeamsUpdated();
     if (IsGameOver)
     {
+        GameState->SetGameOverReason(GameOverReasonType::EnemyWon);
         SetMatchState(MatchStateGameOver);
     }
 }
@@ -334,7 +335,16 @@ void AGameMode_Base::CheckForWaveFinished()
 	auto Enemy = UGameplayStatics::GetActorOfClass(GetWorld(), AEnemy_Base::StaticClass());
     if (!Enemy && bWaveFinishedSpawn)
     {
-        SetMatchState(MatchStateBuildingPhase);
+        // Check for if last wave was defeated
+        if (bLastWaveSpawned)
+        {
+            GameState->SetGameOverReason(GameOverReasonType::TeamWon);
+            SetMatchState(MatchStateGameOver);
+        }
+        else
+        {
+            SetMatchState(MatchStateBuildingPhase);
+        }
     }
 }
 
@@ -399,7 +409,7 @@ void AGameMode_Base::ResetGame()
         // Reset GameState
         // TODO: Multiple teams
         GameState->SetTeamLives(0, 20);
-        GameState->SetGameOver(false);
+        GameState->SetGameOverReason(GameOverReasonType::None);
         GameState->WaveCount = 0;
         
         // GameState Replication for host

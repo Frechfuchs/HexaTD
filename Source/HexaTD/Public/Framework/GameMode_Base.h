@@ -40,7 +40,7 @@ public:
 	void HandleMatchStateWavePhase();
 	void HandleMatchStateGameOver();
 	void HandlePlayerIsReady();
-	void HandleWaveFinishedSpawn();
+	void HandleWaveFinishedSpawn(bool IsLastWave);
 	UFUNCTION(BlueprintCallable)
 	void TeamLosingLives(int TeamID, int LivesCount);
 	void OccupieSystemGridSpaces();
@@ -50,6 +50,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetGame();
 
+	AGameState_Base* GameState;
 protected:
 	/**
 	 * Overrides
@@ -59,7 +60,6 @@ protected:
 private:
 	UOnlineGameInstance* GameInstance;
 	TArray<APlayerController_Base*> PlayerControllers;
-	AGameState_Base* GameState;
 	AHexGrid* HexGrid;
 	// TODO: Can there be multiple?
 	AActor* GoalPoint;
@@ -67,11 +67,11 @@ private:
 	ASpawnPoint* SpawnPoint;
 	TArray<AActor*> CheckPoints;
 	bool bWaveFinishedSpawn = false;
+	bool bLastWaveSpawned = false;
 	FName MatchStateWaitToStart = "WaitingToStart";
 	FName MatchStateInProgress = "InProgress";
 	FName MatchStateBuildingPhase = "BuildingPhase";
 	FName MatchStateWavePhase = "WavePhase";
 	FName MatchStateGameOver = "GameOver";
-
 };
 
