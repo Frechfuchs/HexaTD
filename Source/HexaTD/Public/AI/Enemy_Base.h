@@ -22,6 +22,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/**
+	 * Replication
+	 */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UFUNCTION()
+	void OnRep_CurrentHitpointsUpdated();
+
 	// From IEffectable
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Broadcast")
 	void Effect(FEffect& Effect);
@@ -39,7 +46,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
 	UHealthbarComponent* Healthbar;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHitpoints = 100;
@@ -62,6 +69,7 @@ private:
 	AGameMode_Base* GameMode;
 	UCharacterMovementComponent* MovementComponent;
 	AAIController* AIController;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentHitpointsUpdated)
 	float CurrentHitpoints = 1;
 	FTimerHandle TimerHandleSlowEffect;
 	FTimerHandle TimerHandlePoisonEffect;

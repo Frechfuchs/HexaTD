@@ -1,14 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AIController.h"
 #include "AI/Enemy_Base.h"
+#include "AIController.h"
 #include "AI/SpawnPoint.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BrainComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Framework/GameMode_Base.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "UI/HealthbarComponent.h"
 
@@ -41,11 +42,16 @@ void AEnemy_Base::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority()) GameMode = Cast<AGameMode_Base>(GetWorld()->GetAuthGameMode());
+	if (HasAuthority())
+	{
+		GameMode = Cast<AGameMode_Base>(GetWorld()->GetAuthGameMode());
+		MovementComponent->MaxWalkSpeed = MaxWalkSpeed;
+	}
 
 	RestoreHealth();
 }
 
+// TODO: Check if this can get removed!
 /**
  * @brief Called every frame
  * 
@@ -54,7 +60,26 @@ void AEnemy_Base::BeginPlay()
 void AEnemy_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+/**
+ * @brief TODO
+ * 
+ * @param OutLifetimeProps 
+ */
+void AEnemy_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemy_Base, CurrentHitpoints);
+}
+
+/**
+ * @brief TODO
+ */
+void AEnemy_Base::OnRep_CurrentHitpointsUpdated()
+{
+	UpdateHealthbar();
 }
 
 /**
