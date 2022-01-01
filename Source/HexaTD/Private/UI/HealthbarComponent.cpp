@@ -14,11 +14,24 @@ UHealthbarComponent::UHealthbarComponent()
 	SetDrawSize(FVector2D(50.f, 10.f));
 }
 
+/**
+ * @brief TODO
+ * 
+ * @param Percent 
+ */
 void UHealthbarComponent::SetHitpointsPercent(float Percent)
 {
-    HealthbarWidget->SetHitpointsPercent(Percent);
+    // TODO: On Clients the BeginPlay get ref doesn't work. This should be investigated!
+    if (!HealthbarWidget) HealthbarWidget = Cast<UHealthbarWidget>(GetWidget());
+    if (HealthbarWidget)
+    {
+        HealthbarWidget->SetHitpointsPercent(Percent);
+    }
 }
 
+/**
+ * @brief TODO
+ */
 void UHealthbarComponent::BeginPlay()
 {
     Super::BeginPlay();
