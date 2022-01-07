@@ -100,9 +100,7 @@ void ABuilding_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// TODO: Remove if fixed
-	if (bIsPreview) UE_LOG(LogTemp, Error, TEXT("I SHOULD NOT BE TICKING!"));
-	if (HasAuthority() && bCanUseEffect && HasTarget())
+	if (HasAuthority() && bCanUseEffect && HasTarget() && !bIsPreview)
 	{
 		bCanUseEffect = false;
 		UseEffect();
