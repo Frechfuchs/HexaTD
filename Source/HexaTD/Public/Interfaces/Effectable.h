@@ -19,33 +19,33 @@ struct HEXATD_API FEffect
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float Damage = 1.f;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	bool IsSlow = false;
-	UPROPERTY(BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float SlowPercent = 0.f;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float SlowTime = 0.f;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	bool IsTeleport = false;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EffectTeleportType> TeleportType;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	bool IsPoison = false;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float PoisonDamage = 0.f;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	int32 PoisonTickCount = 0;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float PoisonInterval = 0.f;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	bool IsPushBack = false;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float PushBackForce = 0.f;
 };
 
