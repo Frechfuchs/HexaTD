@@ -83,14 +83,13 @@ void APlayerController_Base::DestroySelectedBuilding()
 
 /**
  * @brief TODO
- * 
+ * Called on client
  */
-void APlayerController_Base::UpgradeSelectedBuilding()
+void APlayerController_Base::UpgradeSelectedBuilding(int32 UpgradeIndex)
 {
-    //UE_LOG(LogTemp, Warning, TEXT("UpgradeCost: %d"), SelectedBuilding->GetUpgradeCost());
     if (SelectedBuilding && HasEnoughResources(SelectedBuilding->GetUpgradeCost()))
     {
-        ServerUpgradeBuilding(SelectedBuilding);
+        ServerUpgradeBuilding(SelectedBuilding, UpgradeIndex);
     }
 }
 
@@ -102,7 +101,6 @@ void APlayerController_Base::UpgradeSelectedBuilding()
  */
 void APlayerController_Base::ServerSpawnBuilding_Implementation(FVector Location, TSubclassOf<ABuilding_Base> BuildingClass)
 {
-    // TODO: Check if valid to spawn (ressources)!
     int32 ResourceCost = BuildingClass.GetDefaultObject()->ResourceCost;
     if (HexGrid && GameMode->IsBuildingPhase() && HasEnoughResources(ResourceCost))
     {
@@ -149,7 +147,7 @@ void APlayerController_Base::ServerDestroyBuilding_Implementation(ABuilding_Base
  * 
  * @param Building 
  */
-void APlayerController_Base::ServerUpgradeBuilding_Implementation(ABuilding_Base* Building)
+void APlayerController_Base::ServerUpgradeBuilding_Implementation(ABuilding_Base* Building, int32 UpgradeIndex)
 {
     if (Building)
     {
@@ -158,7 +156,7 @@ void APlayerController_Base::ServerUpgradeBuilding_Implementation(ABuilding_Base
         {
             PlayerState->ResourceAmount -= UpgradeCost;
             PlayerState->OnRep_ResourceAmountUpdated();
-            Building->Upgrade();
+            Building->Upgrade(UpgradeIndex);
             // Broadcast for host, client will be notified via OnRep_Level in Building
             BuildingSelected.Broadcast();
         }

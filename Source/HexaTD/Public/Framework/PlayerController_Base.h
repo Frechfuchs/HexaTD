@@ -37,7 +37,7 @@ public:
 	void DestroySelectedBuilding();
 	/** TODO */
 	UFUNCTION(BlueprintCallable)
-	void UpgradeSelectedBuilding();	
+	void UpgradeSelectedBuilding(int32 UpgradeIndex);	
 
 	/**
 	 * Replication
@@ -50,7 +50,7 @@ public:
 	void ServerDestroyBuilding(ABuilding_Base* Building);
 	/** TODO */
 	UFUNCTION(Server, Reliable)
-	void ServerUpgradeBuilding(ABuilding_Base* Building);
+	void ServerUpgradeBuilding(ABuilding_Base* Building, int32 UpgradeIndex);
 	/** TODO */
 	UFUNCTION(Client, Reliable)
 	void ClientPostUpgradeBuilding();

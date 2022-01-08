@@ -7,6 +7,19 @@
 #include "Interfaces/Effectable.h"
 #include "Building_Base.generated.h"
 
+USTRUCT(Blueprintable)
+struct HEXATD_API FBuildingUpgrade {
+	GENERATED_BODY()
+
+	// TODO: Make a tree here?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FEffect Option_A;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FEffect Option_B;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FEffect Option_C;
+};
+
 class AEnemy_Base;
 class UDecalComponent;
 class UMaterialInterface;
@@ -29,7 +42,7 @@ public:
 	/**
 	 * Gameplay
 	 */
-	void Upgrade();
+	void Upgrade(int32 UpgradeIndex);
 
 	/**
 	 * Replication
@@ -42,6 +55,18 @@ public:
 	/** TODO */
 	UFUNCTION()
 	void OnRep_LevelChanged();
+	/** TODO */
+	UFUNCTION(Client, Reliable)
+	void ClientOnEffectChanged();
+	/** TODO */
+	UFUNCTION()
+	void OnRep_EffectChanged();
+	/** TODO */
+	UFUNCTION(Client, Reliable)
+	void ClientOnUpgradesChanged();
+	/** TODO */
+	UFUNCTION()
+	void OnRep_UpgradesChanged();
 
 	/**
 	 * Getters & Setters
@@ -66,6 +91,8 @@ public:
 	 * Delegates
 	 */
 	FDelegate_NotifyBuildingChange OnLevelChanged;
+	FDelegate_NotifyBuildingChange OnEffectChanged;
+	FDelegate_NotifyBuildingChange OnUpgradesChanged;
 
 	/** TODO */
 	UPROPERTY()
@@ -73,8 +100,6 @@ public:
 	/** TODO */
 	UPROPERTY(BlueprintReadWrite)
 	int32 ResourceCost = 1;
-	UPROPERTY(BlueprintReadWrite)
-	FEffect Effect;
 
 protected:
 	// Called when the game starts or when spawned
@@ -82,9 +107,15 @@ protected:
 	UFUNCTION(BlueprintNativeEvent)
 	void GetTargets(TArray<AEnemy_Base*> &InTargets) const;
 
-	UPROPERTY(EditInstanceOnly)
+	/** TODO */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, ReplicatedUsing = OnRep_EffectChanged)
+	FEffect Effect;
+	/** TODO */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, ReplicatedUsing = OnRep_UpgradesChanged)
+	FBuildingUpgrade Upgrades;
+	UPROPERTY(BlueprintReadWrite)
 	UStaticMeshComponent* StaticMeshComponent;
-	UPROPERTY(EditInstanceOnly)
+	UPROPERTY(BlueprintReadWrite)
 	USphereComponent* BodyCollisionComponent;
 	// TODO: Move to TargetComponent?
 	USphereComponent* TargetCollisionComponent;
@@ -93,8 +124,6 @@ protected:
 	int32 Level = 1;
 	UPROPERTY(EditDefaultsOnly)
 	float Range = 300.f;
-	UPROPERTY(EditDefaultsOnly)
-	float EffectDelay = 1.f;
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AEnemy_Base*> Targets;
 

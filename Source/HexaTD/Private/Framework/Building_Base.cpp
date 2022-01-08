@@ -107,7 +107,7 @@ void ABuilding_Base::Tick(float DeltaTime)
 
 		// Add delay for bCanUseEffect to be true again
         FTimerHandle TimerHandle;
-        GetWorldTimerManager().SetTimer(TimerHandle, this, &ABuilding_Base::ResetEffectDelay, EffectDelay, false);
+        GetWorldTimerManager().SetTimer(TimerHandle, this, &ABuilding_Base::ResetEffectDelay, Effect.Interval, false);
 	}
 }
 
@@ -115,10 +115,23 @@ void ABuilding_Base::Tick(float DeltaTime)
  * @brief TODO
  * 
  */
-void ABuilding_Base::Upgrade()
+void ABuilding_Base::Upgrade(int32 UpgradeIndex)
 {
 	Level++;
-	Effect.Damage += Effect.Damage * 1.5f;
+	switch (UpgradeIndex)
+	{
+		case 0:
+			Effect = Upgrades.Option_A;
+			break;
+		case 1:
+			Effect = Upgrades.Option_B;
+			break;
+		case 2:
+			Effect = Upgrades.Option_C;
+			break;
+	}
+
+	Upgrades = FBuildingUpgrade{0};
 	// broadcast for host
 	OnLevelChanged.Broadcast();
 }
@@ -133,6 +146,8 @@ void ABuilding_Base::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
     DOREPLIFETIME(ABuilding_Base, Level);
+    DOREPLIFETIME(ABuilding_Base, Effect);
+    DOREPLIFETIME(ABuilding_Base, Upgrades);
 }
 
 /**
@@ -151,6 +166,44 @@ void ABuilding_Base::ClientOnLevelChanged_Implementation()
 void ABuilding_Base::OnRep_LevelChanged()
 {
 	ClientOnLevelChanged();
+}
+
+
+/**
+ * @brief 
+ * 
+ */
+void ABuilding_Base::ClientOnEffectChanged_Implementation()
+{
+	OnEffectChanged.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void ABuilding_Base::OnRep_EffectChanged()
+{
+	ClientOnEffectChanged();
+}
+
+
+/**
+ * @brief 
+ * 
+ */
+void ABuilding_Base::ClientOnUpgradesChanged_Implementation()
+{
+	OnUpgradesChanged.Broadcast();
+}
+
+/**
+ * @brief TODO
+ * 
+ */
+void ABuilding_Base::OnRep_UpgradesChanged()
+{
+	ClientOnUpgradesChanged();
 }
 
 /**
