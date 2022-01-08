@@ -112,7 +112,7 @@ void UOnlineGameInstance::OnCreateSessionComplete(FName ServerName, bool Success
     UE_LOG(LogTemp, Warning, TEXT("Create Session success: %d"), Success);
     if (Success)
     {
-        GetWorld()->ServerTravel("/Game/HexaTD/Maps/Test?listen");
+        GetWorld()->ServerTravel("/Game/HexaTD/Maps/World_1_Radius?listen");
     }
 }
 
