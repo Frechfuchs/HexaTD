@@ -62,7 +62,7 @@ void AGameState_Base::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > & O
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-    DOREPLIFETIME(AGameState_Base, bIsGameOver)
+    DOREPLIFETIME(AGameState_Base, GameOverReason);
     DOREPLIFETIME(AGameState_Base, PlayerTeams);
     DOREPLIFETIME(AGameState_Base, WaveCount);
 }
@@ -146,9 +146,9 @@ TArray<FPlayerTeam> AGameState_Base::GetPlayerTeams() const
  * 
  * @param GameOver 
  */
-void AGameState_Base::SetGameOver(bool GameOver)
+void AGameState_Base::SetGameOverReason(TEnumAsByte<GameOverReasonType> GameOver)
 {
-    bIsGameOver = GameOver;
+    GameOverReason = GameOver;
 }
 
 /**
@@ -157,7 +157,7 @@ void AGameState_Base::SetGameOver(bool GameOver)
  * @return true 
  * @return false 
  */
-bool AGameState_Base::GetGameOver() const
+TEnumAsByte<GameOverReasonType> AGameState_Base::GetGameOverReason() const
 {
-    return bIsGameOver;
+    return GameOverReason;
 }
